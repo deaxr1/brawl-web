@@ -501,42 +501,60 @@ window.addEventListener('contextmenu', e => { e.preventDefault(); return false; 
 
 // МОБИЛЬНОЕ УПРАВЛЕНИЕ
 const mobileControls = {
-    move: { x: 0, y: 0, active: false },
-    aim: { x: 0, y: 0, active: false }
+    move: { x: 0, y: 0, active: false, id: null },
+    aim: { x: 0, y: 0, active: false, id: null },
+    super: { x: 0, y: 0, active: false, id: null }
 };
 let isMobile = false; // Флаг мобильного устройства
 window.addEventListener('touchstart', () => isMobile = true, {once:true}); // Определяем тач-устройство при первом касании
 
 function setupJoystick(zoneId, knobId, type) {
     const zone = document.getElementById(zoneId);
-    const knob = document.getElementById(knobId);
+    const knob = knobId ? document.getElementById(knobId) : null; // knob может не быть (для супера)
     let startX, startY;
 
     zone.addEventListener('touchstart', e => {
         e.preventDefault();
+        // Ищем свободный палец (новый)
         const touch = e.changedTouches[0];
+        
+        // Если этот контрол уже занят, игнорируем
+        if (mobileControls[type].active) return;
+
+        mobileControls[type].id = touch.identifier; // Запоминаем ID пальца
+        mobileControls[type].active = true;
         startX = touch.clientX;
         startY = touch.clientY;
-        if (type === 'move') mobileControls.move.active = true;
-        if (type === 'aim') mobileControls.aim.active = true;
+        
+        if (type === 'super') G.p.isSuperAiming = true; // Включаем желтый прицел
     }, {passive: false});
 
     zone.addEventListener('touchmove', e => {
         e.preventDefault();
-        if ((type === 'move' && !mobileControls.move.active) || (type === 'aim' && !mobileControls.aim.active)) return;
+        if (!mobileControls[type].active) return;
         
-        const touch = e.changedTouches[0];
+        // Ищем наш палец по ID
+        let touch = null;
+        for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === mobileControls[type].id) {
+                touch = e.changedTouches[i];
+                break;
+            }
+        }
+        if (!touch) return; // Это не наш палец
+
         let dx = touch.clientX - startX;
         let dy = touch.clientY - startY;
         const dist = Math.hypot(dx, dy);
-        const maxDist = 35; // Радиус джойстика
+        const maxDist = type === 'super' ? 40 : 35; // Радиус джойстика
 
         if (dist > maxDist) {
             dx = (dx / dist) * maxDist;
             dy = (dy / dist) * maxDist;
         }
 
-        knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+        if (knob) knob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+        else zone.style.transform = `translate(${dx}px, ${dy}px)`; // Двигаем саму кнопку (для супера)
 
         // Нормализуем вектор (-1 до 1)
         const normX = dx / maxDist;
@@ -545,9 +563,11 @@ function setupJoystick(zoneId, knobId, type) {
         if (type === 'move') {
             mobileControls.move.x = normX;
             mobileControls.move.y = normY;
-        } else if (type === 'aim') {
-            mobileControls.aim.x = normX;
-            mobileControls.aim.y = normY;
+        } else {
+            // Aim или Super
+            mobileControls[type].x = normX;
+            mobileControls[type].y = normY;
+            
             // Обновляем "мышь" для прицеливания
             if (G.p) {
                 mouse.x = (G.p.x + normX * 300 - G.cam.x) * ZOOM;
@@ -558,15 +578,35 @@ function setupJoystick(zoneId, knobId, type) {
 
     zone.addEventListener('touchend', e => {
         e.preventDefault();
-        knob.style.transform = `translate(-50%, -50%)`;
+        
+        // Проверяем, наш ли палец отпустили
+        let touchFound = false;
+        for (let i = 0; i < e.changedTouches.length; i++) {
+            if (e.changedTouches[i].identifier === mobileControls[type].id) {
+                touchFound = true;
+                break;
+            }
+        }
+        if (!touchFound) return;
+
+        if (knob) knob.style.transform = `translate(-50%, -50%)`;
+        else zone.style.transform = `translate(0px, 0px)`;
+
+        mobileControls[type].active = false;
+        mobileControls[type].id = null;
+
         if (type === 'move') {
-            mobileControls.move.active = false;
             mobileControls.move.x = 0; mobileControls.move.y = 0;
         } else if (type === 'aim') {
-            mobileControls.aim.active = false;
             // Выстрел при отпускании
             if (G.p && !G.p.dead) {
                 G.p.shoot((mouse.x / ZOOM) + G.cam.x, (mouse.y / ZOOM) + G.cam.y);
+            }
+        } else if (type === 'super') {
+            G.p.isSuperAiming = false;
+            // Супер при отпускании
+            if (G.p && !G.p.dead && G.p.sup >= 100) {
+                G.p.super((mouse.x / ZOOM) + G.cam.x, (mouse.y / ZOOM) + G.cam.y);
             }
         }
     }, {passive: false});
@@ -574,12 +614,7 @@ function setupJoystick(zoneId, knobId, type) {
 
 setupJoystick('joystickZone', 'joystickKnob', 'move');
 setupJoystick('attackJoystickZone', 'attackJoystickKnob', 'aim');
-
-// Супер кнопка (Тач)
-document.getElementById('superBtn').addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (G.p && G.p.sup >= 100) G.p.super((mouse.x / ZOOM) + G.cam.x, (mouse.y / ZOOM) + G.cam.y);
-}, {passive: false});
+setupJoystick('superBtn', null, 'super'); // Супер теперь тоже джойстик
 
 
 // КЛАССЫ
@@ -900,7 +935,7 @@ class Brawler extends Obj {
     draw(ctx) {
         // ОТРИСОВКА ПРИЦЕЛА (Только для игрока)
         // Показываем, если это ПК (не мобайл) ИЛИ если активен джойстик прицеливания
-        if (this === G.p && !this.dead && (!isMobile || mobileControls.aim.active)) {
+        if (this === G.p && !this.dead && (!isMobile || mobileControls.aim.active || mobileControls.super.active)) {
             ctx.save();
             ctx.translate(this.x, this.y);
             
@@ -1323,18 +1358,18 @@ function gameLoop() {
     G.cam.x = G.p.x - (canvas.width / ZOOM) / 2; G.cam.y = G.p.y - (canvas.height / ZOOM) / 2;
 
     // ОТРИСОВКА
-    ctx.fillStyle = '#3266a8'; ctx.fillRect(0, 0, canvas.width, canvas.height); // Вода
+    ctx.fillStyle = '#2c2c2c'; ctx.fillRect(0, 0, canvas.width, canvas.height); // Темный фон (Пустота)
     ctx.save();
     ctx.scale(ZOOM, ZOOM);
     ctx.translate(-G.cam.x, -G.cam.y);
 
-    // Карта (Трава и Границы)
-    ctx.fillStyle = '#5b9e28'; ctx.fillRect(-G.w, -G.h, G.w*2, G.h*2);
+    // Карта (Песчаная арена)
+    ctx.fillStyle = '#e6c288'; ctx.fillRect(-G.w, -G.h, G.w*2, G.h*2);
 
     // Сетка
     ctx.save();
     ctx.beginPath(); ctx.rect(-G.w, -G.h, G.w*2, G.h*2); ctx.clip(); // Рисуем сетку только внутри карты
-    ctx.strokeStyle = '#4a8520'; ctx.lineWidth = 2; ctx.beginPath();
+    ctx.strokeStyle = '#c9a66b'; ctx.lineWidth = 2; ctx.beginPath();
     for(let x=Math.floor(G.cam.x/100)*100; x<G.cam.x+canvas.width; x+=100) { ctx.moveTo(x, G.cam.y); ctx.lineTo(x, G.cam.y+canvas.height); }
     for(let y=Math.floor(G.cam.y/100)*100; y<G.cam.y+canvas.height; y+=100) { ctx.moveTo(G.cam.x, y); ctx.lineTo(G.cam.x+canvas.width, y); }
     ctx.stroke();

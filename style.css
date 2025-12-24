@@ -63,6 +63,16 @@ body {
     background-size: cover;
 }
 
+.version-lbl {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    font-weight: bold;
+    z-index: 10;
+}
+
 .top-bar {
     position: absolute;
     top: 10px;
@@ -493,7 +503,7 @@ img[src*="spike_model.png"], img[src*="spike_avatar.png"] { transform: scale(0.8
 
 /* ИГРА */
 #gameUI { display: none; } /* Canvas управляется JS */
-canvas { display: block; background-color: #3266a8; cursor: crosshair; }
+canvas { display: block; background-color: #2c2c2c; cursor: crosshair; }
 
 .hud-top {
     position: absolute;
@@ -716,3 +726,15 @@ canvas { display: block; background-color: #3266a8; cursor: crosshair; }
     pointer-events: none;
 }
 #attackJoystickKnob { background: rgba(255, 0, 0, 0.5); }
+
+/* АДАПТАЦИЯ ПОД МОБИЛЬНЫЕ (Ландшафт) */
+@media (max-height: 600px) {
+    .hero-display { top: 55%; transform: translate(-50%, -50%) scale(0.65); }
+    .bottom-right { transform: scale(0.7); transform-origin: bottom right; right: 0; bottom: 0; }
+    .bottom-left { transform: scale(0.7); transform-origin: bottom left; left: 0; bottom: 0; }
+    .left-sidebar { transform: translateY(-50%) scale(0.7); left: -20px; }
+    .right-sidebar { transform: translateY(-50%) scale(0.7); right: -10px; }
+    .top-bar { width: 100%; transform: scale(0.75); transform-origin: top center; top: 5px; }
+    .mode-selector { width: 250px; height: 100px; } /* Чуть меньше карточка режима */
+    #playBtn { height: 100px; padding: 0 40px; font-size: 30px; }
+}
