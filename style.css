@@ -357,7 +357,7 @@ img[src*="spike_model.png"], img[src*="spike_avatar.png"] { transform: scale(0.8
 .detail-card {
     display: flex;
     width: 80%;
-    height: 70%;
+    height: 85%;
     background: #333;
     border: 4px solid #000;
     border-radius: 10px;
@@ -371,11 +371,8 @@ img[src*="spike_model.png"], img[src*="spike_avatar.png"] { transform: scale(0.8
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 5px;
     text-align: left;
-    overflow-y: auto; /* Прокрутка для текста и кнопок */
-    height: 100%;
-    padding-right: 10px;
 }
 #detailName { font-size: 40px; color: #ffcc00; margin: 0; text-transform: uppercase; }
 #detailDesc { font-size: 16px; color: #ddd; line-height: 1.2; max-height: 100px; overflow-y: auto; }
@@ -744,7 +741,7 @@ canvas { display: block; background-color: #2c2c2c; cursor: crosshair; }
     
     /* Исправление окна бойца для телефонов */
     .detail-card { width: 95%; height: 90%; padding: 10px; gap: 10px; }
-    .detail-left { gap: 5px; }
+    .detail-left { gap: 5px; overflow-y: auto; height: 100%; padding-right: 10px; }
     #detailName { font-size: 28px; }
     .detail-stats { font-size: 14px; padding: 5px; }
     #detailDesc { font-size: 12px; max-height: 60px; }

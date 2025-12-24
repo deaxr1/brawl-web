@@ -6,7 +6,7 @@
 // Скорости движения: Slow=4.5, Norm=5.5, Fast=6.5
 
 const BRAWLERS = { 
-    shelly: {n:'Shelly', rarity:'starter', desc:'Шелли - идеальный рейнджер. Она ответственная, выносливая и непревзойдённо обращается с ружьём, и ей непонятно, как Кольт перетянул всё внимание на себя..', c:'#a020f0', hp:6764, dmg:315, spd:5.5, rld:72, rng:250, spr:0.3, bul:5, superBul:9, superPush: 1.2, img:'shelly_model.png', ava:'shelly_avatar.png'}, 
+    shelly: {n:'Shelly', rarity:'starter', desc:'Шелли - идеальный рейнджер. Она ответственная, выносливая и непревзойдённо обращается с ружьём, и ей непонятно, как Кольт перетянул всё внимание на себя..', c:'#a020f0', hp:6764, dmg:315, spd:5.5, rld:72, rng:250, spr:0.3, bul:5, superBul:9, superPush: 0.5, img:'shelly_model.png', ava:'shelly_avatar.png'}, 
     colt: {n:'Colt', rarity:'trophy', desc:'Кольт - настоящая звезда парка Старр! Его стиль, обаяние и трюки с пистолетами покорят любого(за исключением Шелли).', c:'#ff4444', hp:6200, dmg:323, spd:6.5, rld:72, rng:420, spr:0.05, bul:6, superBul:12, img:'colt_model.png', ava:'colt_avatar.png'},
     nita: {n:'Nita', rarity:'trophy', desc:'Нита - совсем малышка, но рвётся в бой с недетской яростью! Её шапка в виде плюшевого мишки как бы намекает: не будите во мне спящего медведя.', c:'#e83e3e', hp:7020, dmg:1026, spd:5.5, rld:48, rng:220, spr:0.05, bul:1, img:'nita_model.png', ava:'nita_avatar.png'},
     spike: {n:'Spike', rarity:'legendary', desc:'Все считают Спайка просто милым помощником Кольта и Шелли на ранчо, и никто не подозревает, какая боль живёт в его израненной душе.', c:'#00ff00', hp:5400, dmg:980, spd:5.5, rld:93, rng:300, spr:0, bul:1, img:'spike_model.png', ava:'spike_avatar.png'},
@@ -919,6 +919,13 @@ class Brawler extends Obj {
                         e.lastHit = Date.now();
                         hitEnemies.push(e);
                         G.floatTexts.push(new FloatingText(e.x, e.y - 40, Math.floor(this.dmg), '#ff0000'));
+                        
+                        // Проверка на смерть (для ящиков и врагов)
+                        if (e.hp <= 0) { 
+                            e.dead = true; dropCube(e.x, e.y); 
+                            if (e instanceof Brawler) addKillFeed(this, e); 
+                        }
+
                         if (!(e instanceof Box)) this.sup = Math.min(100, this.sup + 15); // Не заряжаем ульту об ящики
                     }
                 });
@@ -1284,7 +1291,7 @@ function generateMap() {
         attempts++;
     }
     // Ящики
-    for(let i=0; i<3; i++) G.boxes.push(new Box((Math.random()-0.5)*G.w*1.8, (Math.random()-0.5)*G.h*1.8));
+    for(let i=0; i<18; i++) G.boxes.push(new Box((Math.random()-0.5)*G.w*1.8, (Math.random()-0.5)*G.h*1.8));
 }
 function startGame() {
     // Останавливаем предыдущий цикл, если он был
@@ -1356,7 +1363,7 @@ function gameLoop() {
                     // Отталкивание Шелли
                     if (b.owner.t === 'shelly' && b.isSup) {
                         let a = Math.atan2(t.y - b.y, t.x - b.x);
-                        t.x += Math.cos(a)*60; t.y += Math.sin(a)*60;
+                        t.x += Math.cos(a)*50; t.y += Math.sin(a)*50;
                     }
                 };
 
