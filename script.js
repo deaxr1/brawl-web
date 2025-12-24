@@ -1180,7 +1180,7 @@ function checkWall(x, y) {
 function checkWallLine(x1, y1, x2, y2) {
     let d = Math.hypot(x2-x1, y2-y1);
     if (d < 10) return false; // Слишком короткая линия
-    let steps = d / 100; // ОПТИМИЗАЦИЯ: Шаг равен размеру стены (еще меньше лагов)
+    let steps = Math.min(50, d / 100); // ЗАЩИТА ОТ ЗАВИСАНИЯ: Максимум 50 шагов
     let dx = (x2-x1)/steps, dy = (y2-y1)/steps;
     for(let i=1; i<steps; i++) {
         if(checkWall(x1+dx*i, y1+dy*i)) return true;
@@ -1201,6 +1201,9 @@ function addKillFeed(killer, victim) {
     const el = document.createElement('div');
     el.className = 'kill-item';
     
+    // Защита от ошибки, если картинка не прогрузилась
+    if (!BRAWLERS[killer.t] || !BRAWLERS[victim.t]) return;
+
     const kImg = BRAWLERS[killer.t].ava;
     const vImg = BRAWLERS[victim.t].ava;
     
@@ -1412,6 +1415,8 @@ function gameLoop() {
     
     // Враги (рисуем только если видим)
     G.en.forEach(e => {
+        // Защита от NaN координат при отрисовке
+        if (!Number.isFinite(e.x) || !Number.isFinite(e.y)) return;
         let dist = Math.hypot(e.x - G.p.x, e.y - G.p.y);
         let visible = !checkBush(e.x, e.y) || dist < 200 || (checkBush(G.p.x, G.p.y) && dist < 300);
         if(visible) { e.draw(ctx); e.drawHP(ctx); }

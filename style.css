@@ -365,6 +365,7 @@ img[src*="spike_model.png"], img[src*="spike_avatar.png"] { transform: scale(0.8
     align-items: center;
     justify-content: space-between;
     gap: 20px;
+    overflow: hidden; /* Чтобы контент не вылезал */
 }
 .detail-left {
     flex: 1;
@@ -372,6 +373,9 @@ img[src*="spike_model.png"], img[src*="spike_avatar.png"] { transform: scale(0.8
     flex-direction: column;
     gap: 15px;
     text-align: left;
+    overflow-y: auto; /* Прокрутка для текста и кнопок */
+    height: 100%;
+    padding-right: 10px;
 }
 #detailName { font-size: 40px; color: #ffcc00; margin: 0; text-transform: uppercase; }
 #detailDesc { font-size: 16px; color: #ddd; line-height: 1.2; max-height: 100px; overflow-y: auto; }
@@ -737,4 +741,13 @@ canvas { display: block; background-color: #2c2c2c; cursor: crosshair; }
     .top-bar { width: 100%; transform: scale(0.75); transform-origin: top center; top: 5px; }
     .mode-selector { width: 250px; height: 100px; } /* Чуть меньше карточка режима */
     #playBtn { height: 100px; padding: 0 40px; font-size: 30px; }
+    
+    /* Исправление окна бойца для телефонов */
+    .detail-card { width: 95%; height: 90%; padding: 10px; gap: 10px; }
+    .detail-left { gap: 5px; }
+    #detailName { font-size: 28px; }
+    .detail-stats { font-size: 14px; padding: 5px; }
+    #detailDesc { font-size: 12px; max-height: 60px; }
+    #selectBrawlerBtn { margin-top: 10px; padding: 8px 20px; font-size: 18px; }
+    #detailImg { max-height: 80%; }
 }
