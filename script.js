@@ -517,9 +517,9 @@ window.addEventListener('contextmenu', e => { e.preventDefault(); return false; 
 
 // МОБИЛЬНОЕ УПРАВЛЕНИЕ
 const mobileControls = {
-    move: { x: 0, y: 0, active: false, id: null },
-    aim: { x: 0, y: 0, active: false, id: null },
-    super: { x: 0, y: 0, active: false, id: null }
+    move: { x: 0, y: 0, active: false, id: null, wasMoved: false },
+    aim: { x: 0, y: 0, active: false, id: null, wasMoved: false },
+    super: { x: 0, y: 0, active: false, id: null, wasMoved: false }
 };
 let isMobile = false; // Флаг мобильного устройства
 window.addEventListener('touchstart', () => isMobile = true, {once:true}); // Определяем тач-устройство при первом касании
@@ -539,6 +539,7 @@ function setupJoystick(zoneId, knobId, type) {
 
         mobileControls[type].id = touch.identifier; // Запоминаем ID пальца
         mobileControls[type].active = true;
+        mobileControls[type].wasMoved = false; // Сброс флага движения
         startX = touch.clientX;
         startY = touch.clientY;
         
@@ -563,6 +564,9 @@ function setupJoystick(zoneId, knobId, type) {
         let dy = touch.clientY - startY;
         const dist = Math.hypot(dx, dy);
         const maxDist = type === 'super' ? 40 : 35; // Радиус джойстика
+
+        // Если сдвинули палец достаточно далеко, считаем это прицеливанием
+        if (dist > 5) mobileControls[type].wasMoved = true;
 
         if (dist > maxDist) {
             dx = (dx / dist) * maxDist;
@@ -608,6 +612,7 @@ function setupJoystick(zoneId, knobId, type) {
         if (knob) knob.style.transform = `translate(-50%, -50%)`;
         else zone.style.transform = `translate(0px, 0px)`;
 
+        const wasMoved = mobileControls[type].wasMoved;
         mobileControls[type].active = false;
         mobileControls[type].id = null;
 
@@ -616,16 +621,55 @@ function setupJoystick(zoneId, knobId, type) {
         } else if (type === 'aim') {
             // Выстрел при отпускании
             if (G.p && !G.p.dead) {
-                G.p.shoot((mouse.x / ZOOM) + G.cam.x, (mouse.y / ZOOM) + G.cam.y);
+                if (wasMoved) {
+                    // Ручное прицеливание
+                    G.p.shoot((mouse.x / ZOOM) + G.cam.x, (mouse.y / ZOOM) + G.cam.y);
+                } else {
+                    // Автоатака (Тап)
+                    const target = getAutoAimTarget(G.p);
+                    if (target) G.p.shoot(target.x, target.y);
+                    else G.p.shoot(G.p.x + (G.p.lastDx||1)*100, G.p.y + (G.p.lastDy||0)*100); // Стреляем прямо
+                }
             }
         } else if (type === 'super') {
             G.p.isSuperAiming = false;
             // Супер при отпускании
             if (G.p && !G.p.dead && G.p.sup >= 100) {
-                G.p.super((mouse.x / ZOOM) + G.cam.x, (mouse.y / ZOOM) + G.cam.y);
+                if (wasMoved) {
+                    G.p.super((mouse.x / ZOOM) + G.cam.x, (mouse.y / ZOOM) + G.cam.y);
+                } else {
+                    // Авто-супер
+                    const target = getAutoAimTarget(G.p);
+                    if (target) G.p.super(target.x, target.y);
+                    else G.p.super(G.p.x + (G.p.lastDx||1)*100, G.p.y + (G.p.lastDy||0)*100);
+                }
             }
         }
     }, {passive: false});
+}
+
+function getAutoAimTarget(player) {
+    // Ищем ближайшего врага или ящик
+    let targets = [...G.en, ...G.boxes].filter(e => !e.dead && e.team !== player.team);
+    let nearest = null;
+    let minD = player.rng + 150; // Ищем чуть дальше радиуса атаки
+
+    // Приоритет: Бойцы
+    let brawlers = targets.filter(e => e instanceof Brawler);
+    brawlers.forEach(e => {
+        let d = Math.hypot(e.x - player.x, e.y - player.y);
+        if (d < minD) { minD = d; nearest = e; }
+    });
+
+    if (nearest) return nearest;
+
+    // Если бойцов нет, ищем ящики
+    targets.filter(e => e instanceof Box).forEach(e => {
+        let d = Math.hypot(e.x - player.x, e.y - player.y);
+        if (d < minD) { minD = d; nearest = e; }
+    });
+
+    return nearest;
 }
 
 setupJoystick('joystickZone', 'joystickKnob', 'move');
@@ -665,7 +709,7 @@ class Box extends Obj { // Ящики с банками
         // HP Bar
         if(this.hp < this.maxHp) {
             ctx.fillStyle = 'black'; ctx.fillRect(this.x-25, this.y-40, 50, 6);
-            ctx.fillStyle = '#ff9900'; ctx.fillRect(this.x-25, this.y-40, 50*(this.hp/this.maxHp), 6);
+            ctx.fillStyle = '#ff9900'; ctx.fillRect(this.x-25, this.y-40, Math.max(0, 50*(this.hp/this.maxHp)), 6);
         }
     }
 }
@@ -830,6 +874,8 @@ class Brawler extends Obj {
             let nx = this.x + dx * this.spd, ny = this.y + dy * this.spd;
             if (!checkWall(nx, this.y)) this.x = nx;
             if (!checkWall(this.x, ny)) this.y = ny;
+            // Запоминаем направление для автоатаки
+            if (dx || dy) { this.lastDx = dx; this.lastDy = dy; }
             if (this.slowed) this.spd /= 0.6; // Возвращаем скорость для следующего кадра (или просто сбрасываем флаг в конце)
         }
         this.x = Math.max(-G.w, Math.min(G.w, this.x)); this.y = Math.max(-G.h, Math.min(G.h, this.y));
@@ -868,12 +914,12 @@ class Brawler extends Obj {
                 // Проверка попадания по врагам (в радиусе модельки)
                 [G.p, ...G.en, ...G.boxes].forEach(e => {
                     if (e === this || e.dead || e.team === this.team) return;
-                    if (!hitEnemies.includes(e) && Math.hypot(this.x - e.x, this.y - e.y) < 40) {
+                    if (!hitEnemies.includes(e) && Math.hypot(this.x - e.x, this.y - e.y) < 60) { // Увеличили радиус попадания
                         e.hp -= this.dmg * (1 + this.cubes * 0.1);
                         e.lastHit = Date.now();
                         hitEnemies.push(e);
                         G.floatTexts.push(new FloatingText(e.x, e.y - 40, Math.floor(this.dmg), '#ff0000'));
-                        this.sup = Math.min(100, this.sup + 15);
+                        if (!(e instanceof Box)) this.sup = Math.min(100, this.sup + 15); // Не заряжаем ульту об ящики
                     }
                 });
                 safety++;
