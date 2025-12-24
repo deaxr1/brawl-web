@@ -117,6 +117,22 @@ window.addEventListener('pagehide', saveGame);
 window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveGame(); });
 window.addEventListener('beforeunload', saveGame);
 
+// БОНУС: 1000 ГЕМОВ ВСЕМ (Единоразово)
+if (!localStorage.getItem('bs_bonus_1k_gems')) {
+    STATE.gems += 1000;
+    localStorage.setItem('bs_bonus_1k_gems', 'true');
+    saveGame();
+    setTimeout(() => alert("🎁 В ЧЕСТЬ ОБНОВЛЕНИЯ ВАМ НАЧИСЛЕНО 1000 ГЕМОВ!"), 1000);
+}
+
+// БОНУС: 1000 ГЕМОВ ВСЕМ (Единоразово)
+if (!localStorage.getItem('bs_bonus_1k_gems')) {
+    STATE.gems += 1000;
+    localStorage.setItem('bs_bonus_1k_gems', 'true');
+    saveGame();
+    setTimeout(() => alert("🎁 В ЧЕСТЬ ОБНОВЛЕНИЯ ВАМ НАЧИСЛЕНО 1000 ГЕМОВ!"), 1000);
+}
+
 // ЛОГИН
 document.getElementById('loginScreen').addEventListener('click', (e) => {
     // Если форма уже открыта, не реагируем на клики по фону (чтобы можно было ввести ник)
