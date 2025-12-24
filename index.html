@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Brawl Stars Web</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="trophy_icon.png">
+</head>
+<body>
+
+    <!-- МУЗЫКА -->
+    <audio id="bgMusic" loop>
+        <source src="menu_music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="battleMusic" loop>
+        <source src="battle_music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="showdownSfx">
+        <source src="showdown_sfx.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="showdownMusic" loop>
+        <source src="showdown_music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="victoryMusic">
+        <source src="victory_music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="defeatMusic">
+        <source src="defeat_music.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ЭКРАН ВХОДА -->
+    <div id="loginScreen" class="screen active" style="z-index: 100;">
+        <div class="login-content">
+            <h1>BRAWL STARS WEB</h1>
+            <div id="loginForm" class="hidden">
+                <input type="text" id="nicknameInput" placeholder="Введите имя" maxlength="12">
+                <button id="confirmLoginBtn">OK</button>
+            </div>
+            <div id="tapToPlay" class="blink-text">НАЖМИ ЧТОБЫ ИГРАТЬ</div>
+        </div>
+    </div>
+
+    <!-- ГЛАВНОЕ МЕНЮ -->
+    <div id="menuScreen" class="screen">
+        <!-- Верхняя панель -->
+        <div class="top-bar">
+            <div class="profile-info">
+                <div class="avatar-box">💀</div>
+                <div class="name-box" id="profileName">PLAYER</div>
+                <div class="trophy-box" id="trophyBtn">
+                    <span id="trophyDisplay">0</span>
+                    <img src="trophy_icon.png" class="trophy-icon-lg">
+                </div>
+            </div>
+            <div class="currency-bar">
+                <div class="cur-item"><img src="coin_icon.png"> <span id="coinDisplay">0</span></div>
+                <div class="cur-item"><img src="gem_icon.png"> <span id="gemDisplay">0</span></div>
+                <div class="cur-item"><img src="token_icon.png"> <span id="tokenDisplay">0</span></div>
+                <div class="cur-item"><img src="star_token_icon.png"> <span id="starTokenDisplay">0</span></div>
+            </div>
+        </div>
+        
+        <!-- Левая панель (Магазин, Бойцы) -->
+        <div class="left-sidebar">
+            <div class="sidebar-item" id="shopBtn">
+                <img src="shop_icon.png" alt="Shop">
+                <span>МАГАЗИН</span>
+            </div>
+            <div class="sidebar-item" id="brawlersBtn">
+                <img src="brawlers_icon.png" alt="Brawlers">
+                <span>БОЙЦЫ</span>
+            </div>
+        </div>
+
+        <!-- Правая панель (Новости, Друзья, Чат) -->
+        <div class="right-sidebar">
+            <div class="small-btn news-btn">
+                <div class="emoji-icon">📰</div>
+                <div class="btn-text">NEWS</div>
+            </div>
+            <div class="small-btn" id="friendsBtn"><img src="friends_icon.png"></div>
+            <div class="small-btn chat-btn">
+                <div class="emoji-icon">💬</div>
+                <div class="btn-text">CHAT</div>
+            </div>
+        </div>
+
+        <!-- Нижняя панель: Ящики (Слева) -->
+        <div class="bottom-left">
+            <div class="box-container" id="brawlBoxBtn"><img src="brawl_box.png"><span>20 <img src="token_icon.png" class="tiny-icon"></span></div>
+            <div class="box-container" id="bigBoxBtn"><img src="big_box.png"><span>5 <img src="star_token_icon.png" class="tiny-icon"></span></div>
+        </div>
+
+        <!-- Нижняя панель: Играть (Справа) -->
+        <div class="bottom-right">
+                <div class="mode-selector">
+                    <img src="mode_icon.png" alt="Mode">
+                    <div class="mode-text">СТОЛКНОВЕНИЕ</div>
+                </div>
+                <button id="playBtn">ИГРАТЬ</button>
+        </div>
+        
+        <!-- Отображение выбранного бойца (по центру) -->
+        <div class="hero-display">
+            <div class="hero-trophies" id="heroTrophies"><img src="trophy_icon.png" style="width: 20px;"> 0</div>
+            <img id="heroImg" src="" alt="">
+        </div>
+    </div>
+
+    <!-- ЭКРАН ВЫБОРА БОЙЦОВ -->
+    <div id="brawlerSelectScreen" class="screen">
+        <h2>ВЫБОР БОЙЦА</h2>
+        <div id="brawlersList" class="brawlers-grid"></div>
+        <button class="back-btn" onclick="showScreen('menu')">НАЗАД</button>
+    </div>
+
+    <!-- ЭКРАН ИНФОРМАЦИИ О БОЙЦЕ -->
+    <div id="brawlerDetailScreen" class="screen">
+        <div class="detail-card">
+            <div class="detail-left">
+                <h1 id="detailName">SHELLY</h1>
+                <div style="color: #aaa; font-weight: bold;" id="detailRarity">НАЧАЛЬНЫЙ БОЕЦ</div>
+                <div style="color: #fff; font-weight: bold;">Уровень: <span id="detailLevel" style="color:#00ff00">1</span></div>
+                <div class="detail-rank-info"><img src="trophy_icon.png" style="width: 24px;"> <span id="detailTrophies">0</span></div>
+                <p id="detailDesc">Описание...</p>
+                <div class="detail-stats">
+                    <div class="stat-row">Здоровье: <span id="detailHp" class="stat-val">0</span></div>
+                    <div class="stat-row">Атака: <span id="detailDmg" class="stat-val">0</span></div>
+                    <div class="stat-row">Супер: <span id="detailSuper" class="stat-val">0</span> <button id="detailInfoBtn" class="info-btn hidden">INFO</button></div>
+                    <div class="stat-row">Скорость: <span id="detailSpd" class="stat-val">Norm</span></div>
+                    <div class="stat-row">Перезарядка: <span id="detailRld" class="stat-val">Norm</span></div>
+                </div>
+                <div class="upgrade-section">
+                    <div class="pp-bar"><div class="pp-fill" id="ppBarFill"></div><div class="pp-text" id="ppText">0/0</div></div>
+                    <button id="upgradeBtn">
+                        <span>УЛУЧШИТЬ</span>
+                        <span style="font-size:12px">💰 <span id="upgradeCost">20</span></span>
+                    </button>
+                </div>
+                <button id="selectBrawlerBtn">ВЫБРАТЬ</button>
+                <button id="givePpBtn">ВЫДАТЬ 250 PP</button>
+            </div>
+            <div class="detail-right"><img id="detailImg" src=""></div>
+        </div>
+        <button class="back-btn" onclick="showScreen('brawlers')">НАЗАД</button>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО МЕДВЕДЯ -->
+    <div id="bearModal" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-modal-btn" onclick="document.getElementById('bearModal').classList.add('hidden')">X</button>
+            <div class="bear-card">
+                <div class="bear-img-box"><img src="bear_model.png"></div>
+                <div class="bear-stats">
+                    <h3>БРЮС</h3>
+                    <p>Здоровье: 4000</p>
+                    <p>Урон: 600</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- МАГАЗИН -->
+    <div id="shopScreen" class="screen">
+        <h2>МАГАЗИН</h2>
+        <div class="shop-items">
+            <div class="shop-item" id="buyCoinsBtn">
+                <img src="coin_icon.png" class="item-icon">
+                <div class="price">10 <img src="gem_icon.png" class="tiny-icon"></div>
+                <div class="label">150 МОНЕТ</div>
+            </div>
+            <div class="shop-item" id="buyPpBtn" style="margin: 0 20px;">
+                <img src="pp_icon.png" class="item-icon">
+                <div class="price">25 <img src="gem_icon.png" class="tiny-icon"></div>
+                <div class="label">250 ОЧКОВ СИЛЫ</div>
+            </div>
+            <div class="shop-item" id="megaBoxBtn">
+                <img src="mega_box.png" class="item-icon">
+                <div class="price">80 <img src="gem_icon.png" class="tiny-icon"></div>
+                <div class="label">МЕГАЯЩИК</div>
+            </div>
+        </div>
+        <button class="back-btn" onclick="showScreen('menu')">НАЗАД</button>
+    </div>
+
+    <!-- ДОРОГА СЛАВЫ -->
+    <div id="trophyRoadScreen" class="screen">
+        <h2>ДОРОГА СЛАВЫ</h2>
+        <div class="road-container" id="trophyRoadList"></div>
+        <button class="back-btn" onclick="showScreen('menu')">НАЗАД</button>
+    </div>
+
+    <!-- НОВОСТИ -->
+    <div id="newsScreen" class="screen">
+        <h2>BRAWL NEWS</h2>
+        <div class="news-content" id="newsContent">
+            <h1 style="color: #ffcc00; text-align: center; text-shadow: 2px 2px 0 #000;">ГЛОБАЛЬНОЕ ОБНОВЛЕНИЕ! <span style="font-size: 0.6em; color: #fff; display: block; margin-top: 5px;">24.12.2025</span></h1>
+            <p>Игра все еще находится в стадии BETA [v2.1], поэтому подобных глобальных обновлений будет немало.</p>
+            
+            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">НОВАЯ МЕХАНИКА ИГРЫ!</h2>
+            <p><strong>* Добавлена система уровней бойцов.</strong><br>
+            С добавлением токенов монеты стали менее востребованы, поэтому было принято решение о создании новой системы прокачки.</p>
+            <p>Отныне каждый боец имеет <strong>9 уровней силы (1-9)</strong>. С каждым улучшением у бойца повышаются значения наносимого урона и здоровья. Для улучшений также была добавлена новая валюта — <strong>"Очки силы"</strong>.</p>
+            <p>Каждый боец имеет свои очки силы, они индивидуальны. Очки силы могут выпадать из ящиков, Дороги Славы, а также продаются в магазине за кристаллы. В магазине и на Дороге Славы вы можете выбрать, кому начислить очки, а в ящиках всё зависит от удачи.</p>
+            <p>С ростом уровня растут и требования по монетам и очкам силы.</p>
+
+            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">НОВЫЕ БОЙЦЫ</h2>
+            <p>
+                🌵 <span style="color: #ffff00; font-weight: bold;">СПАЙК</span> (Легендарный) — Мастер контроля с шипами!<br>
+                🦇 <span style="color: #ff0000; font-weight: bold;">МОРТИС</span> (Мифический) — Неуловимый вампир!
+            </p>
+
+            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">БАЛАНС (МАКС. СИЛА)</h2>
+            <p>С целью поддержания баланса и увеличения продолжительности боя, мы значительно усилили бойцов по сравнению с начальными показателями:</p>
+            
+            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <h3 style="margin: 0; color: #a020f0;">ШЕЛЛИ</h3>
+                • Здоровье выросло на <span style="color:#00ff00">88%</span> [6764 ед.]<br>
+                • Урон атаки вырос на <span style="color:#00ff00">5%</span> [315 ед.]<br>
+                • Отталкивание противников на 1 клетку после использования Супера.
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <h3 style="margin: 0; color: #ff4444;">КОЛЬТ</h3>
+                • Здоровье выросло на <span style="color:#00ff00">121%</span> [6200 ед.]<br>
+                • Урон атаки вырос на <span style="color:#00ff00">8%</span> [323 ед.]
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <h3 style="margin: 0; color: #e83e3e;">НИТА</h3>
+                • Здоровье выросло на <span style="color:#00ff00">85%</span> [7020 ед.]<br>
+                • Урон атаки вырос на <span style="color:#00ff00">39%</span> [1026 ед.]
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <h3 style="margin: 0; color: #00ff00;">СПАЙК</h3>
+                • Здоровье: 5400 ед.<br>
+                • Урон атаки: 980 x 5 ед.
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <h3 style="margin: 0; color: #d000d0;">МОРТИС</h3>
+                • Здоровье: 8000 ед.<br>
+                • Урон атаки: 1680 ед.<br>
+                • Исцеление от Супера: 1430 ед.
+            </div>
+
+            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">ПРОЧЕЕ</h2>
+            <ul style="list-style-type: disc; padding-left: 20px;">
+                <li>Добавлены NickName'ы над бойцами.</li>
+                <li>Добавлена система перезарядки патронов, индивидуальная для каждого бойца.</li>
+                <li>Скорректированы шансы выпадения из ящиков [повышены].</li>
+                <li>Расширено меню выбора бойцов. Теперь информацию о бойце можно узнать прямо в меню!</li>
+                <li>Исправление багов.</li>
+                <li>Улучшена оптимизация ботов.</li>
+            </ul>
+        </div>
+        <button class="back-btn" onclick="showScreen('menu')">НАЗАД</button>
+    </div>
+
+    <!-- ЭКРАН ОТКРЫТИЯ ЯЩИКА -->
+    <div id="boxScreen" class="screen">
+        <div class="box-content">
+            <h2 id="boxTitle">ЯЩИК</h2>
+            <div id="boxResult" class="loot-drop">?</div>
+            <button id="backToMenuBtn">Забрать</button>
+        </div>
+    </div>
+
+    <!-- ИГРОВОЙ ИНТЕРФЕЙС (HUD) -->
+    <div id="gameUI" class="screen">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div class="hud-top">
+            <div class="survivors">Осталось бойцов: <span id="aliveCount">10</span></div>
+        </div>
+        <div class="kill-feed" id="killFeed"></div>
+
+        <div class="hud-bottom">
+            <div class="hp-bar-container"><div id="hpBar"></div></div>
+            <div class="ammo-bar-container"><div id="ammoBar"></div></div>
+            <div class="special-bar-container" id="specialBarCont"><div id="specialBar"></div></div>
+            <div class="super-btn" id="superBtn">SUPER</div>
+        </div>
+        
+        <!-- МОБИЛЬНОЕ УПРАВЛЕНИЕ -->
+        <div id="joystickZone">
+            <div id="joystickKnob"></div>
+        </div>
+        <div id="attackJoystickZone">
+            <div id="attackJoystickKnob"></div>
+        </div>
+
+        <div id="gameOverMsg" class="hidden">СТОЛКНОВЕНИЕ! <br> <button onclick="returnToMenu()">В меню</button></div>
+        <div id="showdownBanner" class="hidden">СТОЛКНОВЕНИЕ!</div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

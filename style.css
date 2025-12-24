@@ -1,0 +1,718 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #2a2a2a;
+    color: white;
+    user-select: none;
+}
+
+.screen {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* ЭКРАН ВХОДА */
+#loginScreen {
+    background: url('menu_bg.jpg') no-repeat center center;
+    background-size: cover;
+}
+.login-content {
+    text-align: center;
+    background: rgba(0,0,0,0.7);
+    padding: 40px;
+    border-radius: 20px;
+    border: 4px solid #333;
+}
+#loginForm input {
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 5px;
+    border: none;
+}
+#confirmLoginBtn {
+    padding: 10px 20px;
+    font-size: 20px;
+    background: #00ff00;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+.blink-text {
+    font-size: 30px;
+    font-weight: bold;
+    animation: blink 1s infinite;
+    cursor: pointer;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* МЕНЮ */
+#menuScreen {
+    background: url('menu_bg.jpg') no-repeat center center;
+    background-size: cover;
+}
+
+.top-bar {
+    position: absolute;
+    top: 10px;
+    width: 95%;
+    display: flex;
+    justify-content: space-between;
+    animation: slideDown 0.5s ease-out;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+    padding: 5px 15px;
+    border-radius: 5px;
+}
+/* Счетчик кубков в профиле */
+.trophy-box {
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffcc00;
+    cursor: pointer;
+    background: rgba(0,0,0,0.3);
+    padding: 2px 8px;
+    border-radius: 5px;
+}
+.trophy-box:hover { background: rgba(255,255,255,0.1); }
+.trophy-icon-lg { width: 30px; height: 30px; margin-left: 5px; object-fit: contain; }
+
+.currency-bar {
+    background: rgba(0,0,0,0.5);
+    padding: 5px 15px;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    gap: 15px;
+}
+.cur-item { display: flex; align-items: center; gap: 5px; }
+.cur-item img { width: 25px; height: 25px; object-fit: contain; }
+
+.tiny-icon { width: 20px; height: 20px; vertical-align: middle; object-fit: contain; }
+
+.left-sidebar {
+    position: absolute;
+    left: -40px; /* Сдвигаем еще левее */
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    animation: slideInLeft 0.5s ease-out;
+}
+
+.sidebar-item {
+    width: 180px;
+    height: 120px;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Прижимаем содержимое влево */
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+.sidebar-item:active { transform: scale(0.95); }
+.sidebar-item img { width: 100%; height: 100%; }
+.sidebar-item span { display: none; }
+
+/* Индивидуальные настройки для иконок */
+#brawlersBtn img {
+    transform: scale(1.15) translateY(-25px); /* Увеличиваем и поднимаем изображение */
+}
+#shopBtn img {
+    transform: translateX(10px) scale(0.9); /* Магазин: чуть вправо и меньше */
+}
+
+.right-sidebar {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    animation: slideInRight 0.5s ease-out;
+}
+
+.small-btn {
+    width: 60px; /* Уменьшили область нажатия */
+    height: 60px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    opacity: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.news-btn {
+    background: transparent;
+    border: none;
+}
+.chat-btn { background: transparent; border: none; }
+.news-btn .emoji-icon, .chat-btn .emoji-icon { font-size: 50px; line-height: 1; } /* Увеличили иконки */
+.news-btn .btn-text { 
+    font-size: 12px; 
+    font-weight: bold; 
+    margin-top: 2px;
+}
+.chat-btn .btn-text { font-size: 12px; font-weight: bold; margin-top: 2px; }
+.small-btn img { width: 100%; height: 100%; }
+/* Увеличиваем иконку друзей */
+#friendsBtn img { transform: scale(1.6); }
+
+/* НИЖНЯЯ ПАНЕЛЬ (ЛЕВАЯ ЧАСТЬ - ЯЩИКИ) */
+.bottom-left {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    animation: slideUp 0.5s ease-out;
+    display: flex;
+    gap: 5px;
+}
+
+.box-container {
+    width: 100px; /* Вернули размер кнопки */
+    cursor: pointer;
+    transition: transform 0.1s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #000;
+}
+.box-container:active { transform: scale(0.95); }
+.box-container img { width: 100%; }
+.box-container span { background: rgba(0,0,0,0.5); padding: 0 8px; border-radius: 6px; margin-top: -15px; font-size: 14px; }
+.box-container .tiny-icon { width: 28px; height: 28px; object-fit: contain; }
+#brawlBoxBtn .tiny-icon { width: 18px; height: 18px; margin-left: 3px; } /* Уменьшили иконку токенов */
+
+/* Настройка маленького ящика: кнопка меньше, картинка больше */
+#brawlBoxBtn { width: 70px; position: relative; top: 25px; margin-right: 10px; }
+#brawlBoxBtn img { width: 100%; transform: scale(1.8) translateY(-5px); }
+
+/* НИЖНЯЯ ПАНЕЛЬ (ПРАВАЯ ЧАСТЬ - ИГРАТЬ) */
+.bottom-right {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    animation: slideUp 0.5s ease-out;
+}
+
+#playBtn {
+    background-color: #ffcc00;
+    border: 4px solid black;
+    padding: 0 60px;
+    height: 120px;
+    font-size: 40px;
+    font-weight: 900;
+    color: white;
+    text-shadow: 2px 2px 0 #000;
+    cursor: pointer;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mode-selector {
+    background: #333;
+    border: 4px solid black;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 310px;
+    height: 120px;
+    cursor: default;
+}
+.mode-selector img { width: 100%; height: 100%; }
+.mode-text { display: none; }
+
+.hero-display {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: fadeIn 1s ease-out;
+    pointer-events: auto; /* Разрешаем клики */
+    cursor: pointer;      /* Показываем курсор-руку */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.hero-trophies {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 5px 15px;
+    border-radius: 10px;
+    color: #ffcc00;
+    font-weight: bold;
+    font-size: 24px;
+    margin-bottom: 10px;
+    border: 2px solid #ffcc00;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-shadow: 2px 2px 0 #000;
+}
+#heroImg { height: 65vh; width: auto; object-fit: contain; }
+
+/* ЭКРАН ВЫБОРА БОЙЦОВ */
+#brawlerSelectScreen { background: #222; }
+.brawlers-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+.brawler-item {
+    width: 120px;
+    height: 140px;
+    border: 2px solid white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+    background: #444;
+    padding: 5px;
+    transition: transform 0.1s;
+}
+.brawler-trophies {
+    font-size: 12px;
+    color: #ffcc00;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.brawler-item:active { transform: scale(0.95); }
+.brawler-item.locked { opacity: 0.5; cursor: not-allowed; }
+.back-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 30px;
+    background: #ff4444;
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+.brawler-avatar { width: 80px; height: 80px; object-fit: cover; margin-bottom: 5px; border: 2px solid black; }
+
+/* Уменьшаем Спайка в меню и выборе (слишком жирный) */
+img[src*="spike_model.png"], img[src*="spike_avatar.png"] { transform: scale(0.85); }
+
+/* Редкости (цвет рамки) */
+.brawler-item.starter { border-color: #b9eaff; }
+.brawler-item.trophy { border-color: #b9eaff; }
+.brawler-item.rare { border-color: #00ff00; }
+.brawler-item.epic { border-color: #d000d0; }
+.brawler-item.mythic { border-color: #ff0000; }
+.brawler-item.legendary { border-color: #ffff00; }
+
+/* ЭКРАН ДЕТАЛЕЙ БОЙЦА */
+#brawlerDetailScreen { background: #222; }
+.detail-card {
+    display: flex;
+    width: 80%;
+    height: 70%;
+    background: #333;
+    border: 4px solid #000;
+    border-radius: 10px;
+    padding: 20px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+.detail-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+}
+#detailName { font-size: 40px; color: #ffcc00; margin: 0; text-transform: uppercase; }
+#detailDesc { font-size: 16px; color: #ddd; line-height: 1.2; max-height: 100px; overflow-y: auto; }
+.detail-stats { font-size: 18px; font-weight: bold; display: flex; flex-direction: column; gap: 5px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; }
+.stat-row { display: flex; justify-content: space-between; }
+.stat-val { color: #00ff00; }
+.detail-rank-info { color: #ffcc00; font-size: 20px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+
+.upgrade-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    background: rgba(0,0,0,0.5);
+    padding: 10px;
+    border-radius: 8px;
+}
+.pp-bar { width: 100px; height: 15px; background: #333; border: 1px solid #fff; position: relative; }
+.pp-fill { height: 100%; background: #d000d0; width: 0%; }
+.pp-text { position: absolute; top: -2px; left: 0; width: 100%; text-align: center; font-size: 12px; text-shadow: 1px 1px 0 #000; }
+
+#selectBrawlerBtn {
+    padding: 10px 30px;
+    background: #ffcc00;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    align-self: flex-start;
+}
+#upgradeBtn {
+    padding: 10px 20px;
+    background: #00ff00;
+    border: 2px solid #fff;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; font-size: 14px;
+}
+/* Кнопка выдачи очков силы (при покупке) */
+#givePpBtn {
+    padding: 15px 30px;
+    background: #d000d0;
+    border: 2px solid #fff;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 20px;
+    display: none; /* Скрыта по умолчанию */
+}
+.detail-right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+#detailImg {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+}
+
+/* МАГАЗИН */
+#shopScreen { background: #330033; }
+.shop-items { display: flex; justify-content: center; align-items: center; height: 100%; }
+.shop-item {
+    width: 150px;
+    height: 180px;
+    background: #550055;
+    border: 4px solid #ffcc00;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+}
+.shop-item img { width: 100%; }
+.shop-item .item-icon { height: 80px; object-fit: contain; }
+.shop-item .price { color: #00ff00; font-weight: bold; font-size: 20px; margin: 5px 0; }
+.shop-item .label { color: white; font-weight: bold; }
+
+/* ДОРОГА СЛАВЫ */
+#trophyRoadScreen { background: #1a1a1a; }
+.road-container {
+    display: flex;
+    overflow-x: auto;
+    width: 90%;
+    height: 60%;
+    align-items: center;
+    gap: 50px;
+    padding: 20px;
+    background: #333;
+    border: 4px solid #000;
+    border-radius: 10px;
+}
+.road-milestone {
+    min-width: 150px;
+    height: 200px;
+    background: #444;
+    border: 3px solid #777;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    position: relative;
+}
+.road-milestone.claimed { opacity: 0.5; filter: grayscale(1); }
+.road-milestone.active { border-color: #00ff00; box-shadow: 0 0 15px #00ff00; }
+.milestone-trophies { font-size: 24px; font-weight: bold; color: #ffcc00; }
+.milestone-reward img { width: 120px; height: 120px; object-fit: contain; } /* Увеличили картинку */
+.claim-btn {
+    padding: 5px 15px;
+    background: #00ff00;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+.claim-btn:disabled { background: #555; cursor: default; }
+
+/* ЯЩИКИ */
+#boxScreen { background-color: #ff4444; }
+.loot-drop {
+    font-size: 40px;
+    margin: 20px;
+    font-weight: bold;
+    text-shadow: 2px 2px 0 #000;
+}
+
+/* ИГРА */
+#gameUI { display: none; } /* Canvas управляется JS */
+canvas { display: block; background-color: #3266a8; cursor: crosshair; }
+
+.hud-top {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.hud-bottom {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.hp-bar-container, .ammo-bar-container, .special-bar-container {
+    width: 200px;
+    height: 20px;
+    background: #333;
+    border: 2px solid black;
+}
+.special-bar-container { height: 10px; margin-top: 2px; display: none; } /* Скрыта по умолчанию */
+
+#hpBar { width: 100%; height: 100%; background: #00ff00; transition: width 0.1s; }
+#ammoBar { width: 100%; height: 100%; background: #ff9900; transition: width 0.1s; }
+#specialBar { width: 0%; height: 100%; background: #ffff00; transition: width 0.1s; }
+
+.super-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #555;
+    border: 4px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    position: absolute;
+    right: 30px;
+    bottom: 180px; /* Подняли выше, чтобы не мешать джойстику атаки */
+    opacity: 0.5;
+}
+
+.super-btn.ready {
+    background: #ffff00;
+    color: black;
+    opacity: 1;
+    box-shadow: 0 0 20px #ffff00;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+#gameOverMsg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 2px 2px 0 #000;
+}
+.hidden { display: none; }
+
+/* СТОЛКНОВЕНИЕ */
+#showdownBanner {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 80px;
+    font-weight: 900;
+    color: #ffcc00;
+    text-shadow: 4px 4px 0 #000;
+    font-style: italic;
+    pointer-events: none;
+}
+
+/* АНИМАЦИИ */
+@keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slideInLeft { from { transform: translate(-100%, -50%); opacity: 0; } to { transform: translate(0, -50%); opacity: 1; } }
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes showdownAnim {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* ТРЯСКА ЭКРАНА */
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+.shake { animation: shake 0.5s; }
+
+/* ЭФФЕКТ НАБЛЮДЕНИЯ */
+.spectating {
+    filter: grayscale(0.8) brightness(0.5);
+}
+
+/* ЛЕНТА УБИЙСТВ */
+.kill-feed {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    pointer-events: none;
+}
+.kill-item {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    animation: fadeOut 4s forwards;
+}
+.kill-icon { width: 30px; height: 30px; object-fit: cover; border: 1px solid white; }
+.kill-name { font-size: 10px; color: #ccc; display: block; max-width: 60px; overflow: hidden; text-overflow: ellipsis; }
+.kill-part { display: flex; flex-direction: column; align-items: center; }
+.flipped-gun { display: inline-block; transform: scaleX(-1); font-size: 20px; }
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* МОДАЛЬНОЕ ОКНО МЕДВЕДЯ */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+.modal-content {
+    background: #333;
+    border: 4px solid #e83e3e;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    position: relative;
+}
+.bear-card { display: flex; gap: 20px; align-items: center; color: white; }
+.bear-img-box img { width: 150px; height: 150px; object-fit: contain; }
+.bear-stats { text-align: left; font-size: 24px; font-weight: bold; }
+.bear-stats h3 { margin: 0 0 10px 0; color: #e83e3e; text-transform: uppercase; }
+.close-modal-btn { position: absolute; top: 5px; right: 10px; background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+.info-btn { background: #00ccff; border: 2px solid white; padding: 5px 10px; font-weight: bold; cursor: pointer; margin-left: 10px; font-size: 12px; }
+.modal.hidden { display: none; }
+
+/* НОВОСТИ */
+#newsScreen { background: #222; }
+.news-content {
+    width: 80%;
+    height: 80%;
+    background: #333;
+    border: 4px solid #fff;
+    padding: 20px;
+    overflow-y: auto;
+    font-size: 18px;
+    line-height: 1.5;
+    animation: slideInUp 0.5s ease-out;
+}
+@keyframes slideInUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* МОБИЛЬНЫЕ ДЖОЙСТИКИ */
+#joystickZone, #attackJoystickZone {
+    position: absolute;
+    bottom: 40px;
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    touch-action: none; /* Отключаем зум и скролл браузера */
+}
+#joystickZone { left: 40px; }
+#attackJoystickZone { right: 40px; border-color: rgba(255, 0, 0, 0.3); }
+
+#joystickKnob, #attackJoystickKnob {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 50px; height: 50px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+#attackJoystickKnob { background: rgba(255, 0, 0, 0.5); }
