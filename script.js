@@ -7,10 +7,10 @@
 
 const BRAWLERS = { 
     shelly: {n:'Shelly', rarity:'starter', desc:'Шелли - идеальный рейнджер. Она ответственная, выносливая и непревзойдённо обращается с ружьём, и ей непонятно, как Кольт перетянул всё внимание на себя..', c:'#a020f0', hp:6764, dmg:315, spd:5.5, rld:72, rng:250, spr:0.3, bul:5, superBul:9, superPush: 0.5, img:'shelly_model.png', ava:'shelly_avatar.png'}, 
-    colt: {n:'Colt', rarity:'trophy', desc:'Кольт - настоящая звезда парка Старр! Его стиль, обаяние и трюки с пистолетами покорят любого(за исключением Шелли).', c:'#ff4444', hp:6200, dmg:323, spd:6.5, rld:72, rng:420, spr:0.05, bul:6, superBul:12, img:'colt_model.png', ava:'colt_avatar.png'},
-    nita: {n:'Nita', rarity:'trophy', desc:'Нита - совсем малышка, но рвётся в бой с недетской яростью! Её шапка в виде плюшевого мишки как бы намекает: не будите во мне спящего медведя.', c:'#e83e3e', hp:7020, dmg:1026, spd:5.5, rld:48, rng:220, spr:0.05, bul:1, img:'nita_model.png', ava:'nita_avatar.png'},
+    colt: {n:'Colt', rarity:'trophy', desc:'Кольт - настоящая звезда парка Старр! Его стиль, обаяние и трюки с пистолетами покорят любого(за исключением Шелли).', c:'#ff4444', hp:6014, dmg:323, spd:6.5, rld:72, rng:420, spr:0.05, bul:6, superBul:12, img:'colt_model.png', ava:'colt_avatar.png'},
+    nita: {n:'Nita', rarity:'trophy', desc:'Нита - совсем малышка, но рвётся в бой с недетской яростью! Её шапка в виде плюшевого мишки как бы намекает: не будите во мне спящего медведя.', c:'#e83e3e', hp:7020, dmg:1077, spd:5.5, rld:48, rng:220, spr:0.05, bul:1, img:'nita_model.png', ava:'nita_avatar.png'},
     spike: {n:'Spike', rarity:'legendary', desc:'Все считают Спайка просто милым помощником Кольта и Шелли на ранчо, и никто не подозревает, какая боль живёт в его израненной душе.', c:'#00ff00', hp:5400, dmg:980, spd:5.5, rld:93, rng:300, spr:0, bul:1, img:'spike_model.png', ava:'spike_avatar.png'},
-    mortis: {n:'Mortis', rarity:'mythic', desc:'Мортис мечтал о карьере гробовщика и по совместительству вампира, но его планам помешало то, что в парке Старр никто не умирает.', c:'#550055', hp:8000, dmg:1680, spd:6.5, rld:93, rng:150, spr:0, bul:1, img:'mortis_model.png', ava:'mortis_avatar.png'}
+    mortis: {n:'Mortis', rarity:'mythic', desc:'Мортис мечтал о карьере гробовщика и по совместительству вампира, но его планам помешало то, что в парке Старр никто не умирает.', c:'#550055', hp:8000, dmg:1512, spd:6.5, rld:93, rng:150, spr:0, bul:1, img:'mortis_model.png', ava:'mortis_avatar.png'}
 };
 
 // Стоимость улучшения (Монеты, Очки силы)
@@ -52,6 +52,19 @@ Object.keys(BRAWLERS).forEach(k => { if (STATE.brawlerTrophies[k] === undefined)
 
 // НИКИ БОТОВ
 const BOT_NAMES = ["Tomar753", "хочу легу", "дайте эдгара", "путь 50к", "sosy jopy", "[БЛЭТ]Лега", "Читер777", "я нуб ты труп", "твой отчим", "Hyra", "Боец", "ксюша", "димон", "DeMon😈", "[ЖМЫХ]Бан", "Мамут Рахал", "Шовхал", "JuanCarlos", "Hold Dick", "[БЛЭТ]❄️IceSpike❄️", "⛩Rzm|64", "♡zxc◊Blaze♡", "⛩️PLAY4IK🐙⛩️", "Master Smoke", "Potato", "teammate", "♡tOmAtO♡", "Байкер Ворон"];
+
+// ПРЕДЗАГРУЗКА РЕСУРСОВ (Оптимизация памяти и лагов)
+const ASSETS = {};
+function loadAssets() {
+    const list = ['bear_model.png'];
+    Object.values(BRAWLERS).forEach(b => { if(!list.includes(b.img)) list.push(b.img); });
+    list.forEach(src => {
+        const img = new Image();
+        img.src = src;
+        ASSETS[src] = img;
+    });
+}
+loadAssets();
 
 // УПРАВЛЕНИЕ UI
 function showScreen(name) {
@@ -385,7 +398,7 @@ function openBox(type) {
                 ppDrops.push({n: BRAWLERS[b].n, a: amt});
                 STATE.powerPoints[b] = (STATE.powerPoints[b] || 0) + amt;
             }
-            if (Math.random() < 0.1) gems = Math.floor(Math.random() * 3) + 1;
+            if (Math.random() < 0.33) gems = Math.floor(Math.random() * 3) + 1; // Шанс 33%
         }
     } else {
         // Большой и Мега: Ресурсы + Шанс бойца
@@ -400,7 +413,8 @@ function openBox(type) {
             ppDrops.push({n: BRAWLERS[b].n, a: amt});
             STATE.powerPoints[b] = (STATE.powerPoints[b] || 0) + amt;
         }
-        if (Math.random() < 0.3) gems = isMega ? 10 : Math.floor(Math.random() * 7) + 3;
+        // Мегаящик: 100% шанс гемов (5-15). Большой: 50% шанс (3-9).
+        if (isMega || Math.random() < 0.5) gems = isMega ? (Math.floor(Math.random() * 11) + 5) : (Math.floor(Math.random() * 7) + 3);
 
         const newBrawler = tryRollBrawler(type);
         if (newBrawler) {
@@ -417,7 +431,8 @@ function openBox(type) {
         if (coins > 0) res.innerHTML += `<br>+${coins} 💰`;
     } else {
         let ppStr = ppDrops.map(p => `+${p.a} PP ${p.n}`).join('<br>');
-        res.innerHTML = `+${coins} 💰<br>${ppStr}<br>+${gems} 💎`;
+        let gemStr = gems > 0 ? `<br>+${gems} 💎` : '';
+        res.innerHTML = `+${coins} 💰<br>${ppStr}${gemStr}`;
     }
     updateMenu();
 }
@@ -596,7 +611,7 @@ function setupJoystick(zoneId, knobId, type) {
         }
     }, {passive: false});
 
-    zone.addEventListener('touchend', e => {
+    const handleEnd = (e) => {
         e.preventDefault();
         
         // Проверяем, наш ли палец отпустили
@@ -645,7 +660,10 @@ function setupJoystick(zoneId, knobId, type) {
                 }
             }
         }
-    }, {passive: false});
+    };
+
+    zone.addEventListener('touchend', handleEnd, {passive: false});
+    zone.addEventListener('touchcancel', handleEnd, {passive: false}); // ЗАЩИТА ОТ ЗАЛИПАНИЯ
 }
 
 function getAutoAimTarget(player) {
@@ -747,8 +765,7 @@ class Brawler extends Obj {
         // Уникальные ники: берем из пула и удаляем, чтобы не повторялись
         this.name = isBot ? getUniqueBotName() : (STATE.nickname || "YOU");
         this.lastHit = Date.now(); this.lastAttackTime = 0; this.regenStage = 0; this.nextRegen = 0;
-        this.imgObj = new Image();
-        this.imgObj.src = s.img;
+        this.imgObj = ASSETS[s.img]; // ОПТИМИЗАЦИЯ: Используем кэшированную картинку
         this.slowed = false; // Флаг замедления
         this.shield = 0; // Щит неуязвимости (таймер)
         this.target = null; // Текущая цель бота
@@ -813,8 +830,9 @@ class Brawler extends Obj {
             // AI: Ищет ближайшую цель (игрок, бот или ящик)
             // ОПТИМИЗАЦИЯ: Строгое ограничение сканирования (раз в 15 кадров)
             this.scanTimer++;
-            if (this.scanTimer > 15 || !this.target || this.target.dead) {
-                if (this.scanTimer > 15) { // Сканируем только если таймер истек
+            // ОПТИМИЗАЦИЯ: Сканируем реже (30 кадров = 0.5 сек) и только если нет близкой цели
+            if (this.scanTimer > 30 || !this.target || this.target.dead) {
+                if (this.scanTimer > 30) { 
                 let minD = 1000;
                 this.target = null;
                 [G.p, ...G.en, ...G.boxes].forEach(e => {
@@ -890,6 +908,7 @@ class Brawler extends Obj {
 
         this.ammo--; this.fireCd = 8; // Базовая задержка
         this.lastAttackTime = Date.now(); 
+        if (this.t === 'mortis') this.fireCd = 18; // КД 0.3 сек (18 кадров) для Мортиса
         
         const s = BRAWLERS[this.t];
         const a = Math.atan2(ty - this.y, tx - this.x);
@@ -938,7 +957,7 @@ class Brawler extends Obj {
                 setTimeout(() => {
                     if(this.dead) return;
                     G.bul.push(new Bullet(this.x, this.y, Math.cos(a)*18, Math.sin(a)*18, this.dmg*(1+this.cubes*0.1), this, s.rng));
-                }, i * 80); // Интервал между пулями
+                }, i * 82); // Интервал между пулями (чуть медленнее)
             }
         } else {
             for(let i=0; i<s.bul; i++) {
@@ -988,7 +1007,7 @@ class Brawler extends Obj {
                 setTimeout(() => {
                     if(this.dead) return;
                     G.bul.push(new Bullet(this.x, this.y, Math.cos(a)*22, Math.sin(a)*22, 286*(1+this.cubes*0.1), this, 600, true));
-                }, i * 50);
+                }, i * 51); // Интервал ульты (чуть медленнее)
             }
         }
         // СПАЙК: Кактусовая ловушка
@@ -1072,7 +1091,7 @@ class Brawler extends Obj {
             ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.stroke();
         }
 
-        if (this.imgObj.complete && this.imgObj.naturalHeight !== 0) {
+        if (this.imgObj && this.imgObj.complete && this.imgObj.naturalHeight !== 0) {
             const h = 90; // Высота модели
             const w = h * (this.imgObj.naturalWidth / this.imgObj.naturalHeight);
             
@@ -1130,7 +1149,7 @@ class Bear extends Brawler {
         
         this.spd = 4.0; // Медленный
         this.rld = 10; this.rng = 50; // Ближний бой
-        this.imgObj.src = 'bear_model.png'; // Нужна картинка медведя
+        this.imgObj = ASSETS['bear_model.png']; // ОПТИМИЗАЦИЯ: Ссылка на кэш (не меняем src у Ниты!)
     }
     // Переопределяем стрельбу на укус (ближняя атака)
     shoot(tx, ty) {
@@ -1332,6 +1351,7 @@ function startGame() {
 }
 
 function gameLoop() {
+    try { // ЗАЩИТА ОТ ВЫЛЕТОВ: Если случится ошибка, игра не зависнет
     if (!STATE.inGame) return;
     G.zone -= 0.35;
     G.frame++; // Счетчик кадров для оптимизации
@@ -1348,7 +1368,11 @@ function gameLoop() {
         if(b.dead) return;
         // Попадание в бойцов
         [G.p, ...G.en].forEach(t => {
-            if(t !== b.owner && t.team !== b.owner.team && !t.dead && Math.hypot(b.x-t.x, b.y-t.y) < t.s+b.s+10) {
+            if(t !== b.owner && t.team !== b.owner.team && !t.dead) {
+                // ОПТИМИЗАЦИЯ: Квадрат расстояния вместо корня (быстрее)
+                let dx = b.x - t.x, dy = b.y - t.y;
+                let r = t.s + b.s + 10;
+                if (dx*dx + dy*dy < r*r) {
                 if (t.shield > 0) { b.dead = true; return; } // Щит блокирует урон
                 
                 // Нанесение урона
@@ -1373,6 +1397,7 @@ function gameLoop() {
                     }
                 } else {
                     dealDamage(); b.dead = true;
+                }
                 }
             }
         });
@@ -1420,10 +1445,10 @@ function gameLoop() {
     });
 
     // Очистка
-    G.bul = G.bul.filter(b => !b.dead);
-    G.en = G.en.filter(e => !e.dead);
-    G.cubes = G.cubes.filter(c => !c.dead);
-    G.boxes = G.boxes.filter(b => !b.dead);
+    G.bul = G.bul.filter(b => b && !b.dead);
+    G.en = G.en.filter(e => e && !e.dead);
+    G.cubes = G.cubes.filter(c => c && !c.dead);
+    G.boxes = G.boxes.filter(b => b && !b.dead);
     G.floatTexts = G.floatTexts.filter(t => t.life > 0);
 
     // Камера
@@ -1436,7 +1461,16 @@ function gameLoop() {
     ctx.translate(-G.cam.x, -G.cam.y);
 
     // Карта (Песчаная арена)
-    ctx.fillStyle = '#e6c288'; ctx.fillRect(-G.w, -G.h, G.w*2, G.h*2);
+    // ОПТИМИЗАЦИЯ: Рисуем фон только там, где видит камера, а не всю карту целиком
+    const viewX = G.cam.x;
+    const viewY = G.cam.y;
+    const viewW = canvas.width / ZOOM;
+    const viewH = canvas.height / ZOOM;
+    
+    ctx.fillStyle = '#e6c288'; 
+    ctx.fillRect(Math.max(-G.w, viewX), Math.max(-G.h, viewY), Math.min(G.w*2, viewW), Math.min(G.h*2, viewH));
+    // На случай если камера вышла за пределы, зальем всё (фоллбэк), но основной rect теперь маленький
+    if (viewX < -G.w || viewY < -G.h) ctx.fillRect(viewX, viewY, viewW, viewH);
 
     // Сетка
     ctx.save();
@@ -1450,11 +1484,6 @@ function gameLoop() {
     // Объекты (Стены и Кусты) - ОПТИМИЗАЦИЯ: Рисуем только то, что в кадре
     ctx.lineWidth = 2; ctx.strokeStyle = '#3e2723'; // Сброс стиля обводки для стен
     
-    // Границы камеры для отсечения лишнего
-    const viewX = G.cam.x;
-    const viewY = G.cam.y;
-    const viewW = canvas.width / ZOOM;
-    const viewH = canvas.height / ZOOM;
 
     G.walls.forEach(w => { 
         if (w.x + w.w > viewX && w.x < viewX + viewW && w.y + w.h > viewY && w.y < viewY + viewH) {
@@ -1583,6 +1612,12 @@ function gameLoop() {
             returnToMenu();
         }, 500); 
     } else gameLoopId = requestAnimationFrame(gameLoop);
+    
+    } catch (err) {
+        // console.error("GAME LOOP ERROR:", err); // ОТКЛЮЧАЕМ ЛОГИ, ЧТОБЫ НЕ ВЕШАТЬ ТЕЛЕФОН
+        // Пытаемся продолжить игру, несмотря на ошибку
+        gameLoopId = requestAnimationFrame(gameLoop);
+    }
 }
 // updateMenu(); // Вызывается после логина
 // updateMenu(); // Вызывается после логина
