@@ -1156,13 +1156,13 @@ class Bullet extends Obj {
         // Проверка стен
         let wIdx = G.walls.findIndex(w => this.x > w.x && this.x < w.x+w.w && this.y > w.y && this.y < w.y+w.h);
         if (wIdx !== -1) {
-            if (this.isSup) G.walls.splice(wIdx, 1); // Ульта ломает стены
+            if (this.isSup) { if (this.owner.t !== 'mortis') G.walls.splice(wIdx, 1); } // Ульта ломает стены (кроме Мортиса)
             else this.dead = true;
         }
         // Ульта ломает кусты
         if (this.isSup) {
             let bIdx = G.bushes.findIndex(b => this.x > b.x && this.x < b.x+b.w && this.y > b.y && this.y < b.y+b.h);
-            if (bIdx !== -1) G.bushes.splice(bIdx, 1);
+            if (bIdx !== -1 && this.owner.t !== 'mortis') G.bushes.splice(bIdx, 1);
         }
         if (this.dist >= this.rng) {
             this.dead = true;
