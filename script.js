@@ -82,9 +82,11 @@ if (Object.keys(STATE.brawlerTrophies).length === 0 && STATE.trophies > 0) {
 }
 
 // ПРИНУДИТЕЛЬНОЕ ОБНОВЛЕНИЕ МАГАЗИНА (Для применения новых цен и таймера)
-if (!localStorage.getItem('bs_shop_update_v7')) {
+if (!localStorage.getItem('bs_shop_update_v10')) {
     STATE.shop = { nextRefresh: 0, items: [] };
-    localStorage.setItem('bs_shop_update_v7', 'true');
+    STATE.brawlidaysClaimed = false; // Сбрасываем получение
+    STATE.brawlidaysExpiry = Date.now() + (72 * 60 * 60 * 1000); // 72 часа
+    localStorage.setItem('bs_shop_update_v10', 'true');
     try { generateShopItems(); } catch(e) { console.error(e); } // Генерируем СРАЗУ
     saveGame();
 }
@@ -511,10 +513,15 @@ function openBox(type) {
 
         let r = Math.random() * 100;
         let rarity = null;
-        // Проверка от леги к эпику
-        if (r < chances.legendary[boxType]) rarity = 'legendary';
-        else if (r < chances.mythic[boxType]) rarity = 'mythic';
-        else if (r < chances.epic[boxType]) rarity = 'epic';
+        
+        // Исправленный расчет шансов (накопительный)
+        let cLeg = chances.legendary[boxType];
+        let cMyth = chances.mythic[boxType];
+        let cEpic = chances.epic[boxType];
+
+        if (r < cLeg) rarity = 'legendary';
+        else if (r < cLeg + cMyth) rarity = 'mythic';
+        else if (r < cLeg + cMyth + cEpic) rarity = 'epic';
 
         if (rarity) {
             const pool = locked.filter(k => BRAWLERS[k].rarity === rarity);
@@ -2221,7 +2228,7 @@ const NEWS_DATA = {
                 • <strong>Исцеление:</strong> Теперь восстанавливает % от ОБЩЕГО здоровья. Танки ликуют!<br>
                 • <strong>Задержка атаки:</strong> Глобальный кулдаун увеличен до 0.45с.<br>
                 • <strong>Боты:</strong> Улучшен ИИ ботов. Добавлены возможности уклонения от выстрелов; подбор кубов усиления.
-            </p>
+                </p>
         `
     },
     upcoming: {

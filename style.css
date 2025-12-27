@@ -877,4 +877,24 @@ canvas { display: block; background-color: #2c2c2c; cursor: crosshair; }
         left: auto;
         right: 20px;
     }
+
+    /* Адаптация магазина под мобильные */
+    .shop-section {
+        min-width: 300px; /* Уменьшаем минимальную ширину секции */
+        margin-right: 30px;
+    }
+    .shop-grid {
+        width: 320px; /* Еще меньше (было 420) */
+        gap: 5px;
+    }
+    .shop-card { padding: 4px; }
+    .card-icon { width: 35px; height: 35px; margin: 2px 0; }
+    .card-title { font-size: 9px; margin-bottom: 2px; }
+    .card-price { font-size: 10px; padding: 2px 4px; }
+    .pp-amount-box { font-size: 9px; padding: 1px 3px; margin-top: -3px; }
+    
+    /* Уменьшаем кнопку Brawlidays */
+    #brawlidaysBtn { width: 130px !important; height: 160px !important; }
+    #brawlidaysBtn img { width: 60px !important; height: 60px !important; }
+    #brawlidaysBtn div { font-size: 16px !important; }
 }
