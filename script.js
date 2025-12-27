@@ -1,4 +1,9 @@
 // КОНФИГ И ДАННЫЕ
+// Глобальный перехват ошибок (чтобы игра не зависала молча)
+window.onerror = function(msg, url, line) {
+    console.error("Global Error:", msg, line);
+    // alert("Ошибка: " + msg); // Можно включить для отладки
+};
 // СТАТЫ (v2.1 - Balance & Fixes)
 // ОПИСАНИЯ БОЙЦОВ: Редактируй поле 'desc' внутри объекта BRAWLERS ниже.
 // Значения ниже - это МАКСИМАЛЬНЫЕ статы (9 уровень). Игра сама пересчитает их в 1 уровень.
@@ -6,11 +11,12 @@
 // Скорости движения: Slow=4.5, Norm=5.5, Fast=6.5
 
 const BRAWLERS = { 
-    shelly: {n:'Shelly', rarity:'starter', desc:'Шелли - идеальный рейнджер. Она ответственная, выносливая и непревзойдённо обращается с ружьём, и ей непонятно, как Кольт перетянул всё внимание на себя..', c:'#a020f0', hp:6764, dmg:315, spd:5.5, rld:72, rng:250, spr:0.3, bul:5, superBul:9, superPush: 0.5, img:'shelly_model.png', ava:'shelly_avatar.png'}, 
-    colt: {n:'Colt', rarity:'trophy', desc:'Кольт - настоящая звезда парка Старр! Его стиль, обаяние и трюки с пистолетами покорят любого(за исключением Шелли).', c:'#ff4444', hp:6014, dmg:323, spd:6.5, rld:72, rng:420, spr:0.05, bul:6, superBul:12, img:'colt_model.png', ava:'colt_avatar.png'},
-    nita: {n:'Nita', rarity:'trophy', desc:'Нита - совсем малышка, но рвётся в бой с недетской яростью! Её шапка в виде плюшевого мишки как бы намекает: не будите во мне спящего медведя.', c:'#e83e3e', hp:7020, dmg:1077, spd:5.5, rld:48, rng:220, spr:0.05, bul:1, img:'nita_model.png', ava:'nita_avatar.png'},
-    spike: {n:'Spike', rarity:'legendary', desc:'Все считают Спайка просто милым помощником Кольта и Шелли на ранчо, и никто не подозревает, какая боль живёт в его израненной душе.', c:'#00ff00', hp:5400, dmg:980, spd:5.5, rld:93, rng:300, spr:0, bul:1, img:'spike_model.png', ava:'spike_avatar.png'},
-    mortis: {n:'Mortis', rarity:'mythic', desc:'Мортис мечтал о карьере гробовщика и по совместительству вампира, но его планам помешало то, что в парке Старр никто не умирает.', c:'#550055', hp:8000, dmg:1512, spd:6.5, rld:93, rng:150, spr:0, bul:1, img:'mortis_model.png', ava:'mortis_avatar.png'}
+    shelly: {n:'Shelly', rarity:'starter', desc:'Шелли - идеальный рейнджер. Она ответственная, выносливая и непревзойдённо обращается с ружьём, и ей непонятно, как Кольт перетянул всё внимание на себя..', c:'#a020f0', hp:6764, dmg:315, spd:5.5, rld:72, rng:250, spr:0.3, bul:5, superBul:9, superPush: 0.8, img:'shelly_model.png', ava:'shelly_avatar.png'}, 
+    colt: {n:'Colt', rarity:'trophy', desc:'Кольт - настоящая звезда парка Старр! Его стиль, обаяние и трюки с пистолетами покорят любого(за исключением Шелли).', c:'#ff4444', hp:6014, dmg:330, spd:6.5, rld:72, rng:420, spr:0.05, bul:6, superBul:12, img:'colt_model.png', ava:'colt_avatar.png'},
+    nita: {n:'Nita', rarity:'trophy', desc:'Нита - совсем малышка, но рвётся в бой с недетской яростью! Её шапка в виде плюшевого мишки как бы намекает: не будите во мне спящего медведя.', c:'#e83e3e', hp:7020, dmg:1300, spd:5.5, rld:48, rng:220, spr:0.05, bul:1, img:'nita_model.png', ava:'nita_avatar.png'},
+    spike: {n:'Spike', rarity:'legendary', desc:'Все считают Спайка просто милым помощником Кольта и Шелли на ранчо, и никто не подозревает, какая боль живёт в его израненной душе.', c:'#00ff00', hp:5400, dmg:750, spd:5.5, rld:93, rng:300, spr:0, bul:1, img:'spike_model.png', ava:'spike_avatar.png'},
+    mortis: {n:'Mortis', rarity:'mythic', desc:'Мортис мечтал о карьере гробовщика и по совместительству вампира, но его планам помешало то, что в парке Старр никто не умирает.', c:'#550055', hp:8000, dmg:1350, spd:6.5, rld:93, rng:150, spr:0, bul:1, img:'mortis_model.png', ava:'mortis_avatar.png'},
+    stu: {n:'Stu', rarity:'epic', desc:'За свою карьеру каскадёра Сту пережил столько ударов и падений и так надышался бензином, что просто удивительно, как он вообще держится на колёсах.', c:'#0088ff', hp:6700, dmg:700, spd:6.0, rld:45, rng:350, spr:0.1, bul:2, img:'stu_model.png', ava:'stu_avatar.png'}
 };
 
 // Стоимость улучшения (Монеты, Очки силы)
@@ -20,20 +26,44 @@ const UPGRADE_COSTS = [
     {c:140, p:80}, {c:290, p:130}, {c:480, p:210}, {c:800, p:340} // До 9 уровня
 ];
 
+// СКИНЫ (Настройки)
+const SKINS = {
+    default: { n: 'Default', filter: 'none', cost: 0, color: '#fff' },
+    gold: { n: 'Gold', filter: 'sepia(1) saturate(3) brightness(1.2)', cost: 500, color: '#ffd700' },
+    dark: { n: 'Dark', filter: 'grayscale(1) brightness(0.6) contrast(1.2)', cost: 1000, color: '#333' }
+};
+
+// Безопасный парсинг (защита от краша при старте)
+const safeParse = (key, def) => {
+    try {
+        const val = localStorage.getItem(key);
+        if (!val || val === 'undefined' || val === 'null') return def;
+        return JSON.parse(val);
+    } catch (e) {
+        console.warn("Сброс битых данных:", key);
+        return def;
+    }
+};
+
 const STATE = { 
     coins: parseInt(localStorage.getItem('bs_coins')) || 100, 
     gems: parseInt(localStorage.getItem('bs_gems')) || 0,
     tokens: parseInt(localStorage.getItem('bs_tokens')) || 0,
     starTokens: parseInt(localStorage.getItem('bs_starTokens')) || 0,
     trophies: parseInt(localStorage.getItem('bs_trophies')) || 0,
-    brawlerTrophies: JSON.parse(localStorage.getItem('bs_brawlerTrophies')) || {}, // {shelly: 0, colt: 10...}
-    trClaimed: JSON.parse(localStorage.getItem('bs_trClaimed')) || [], // Полученные награды пути славы
+    brawlerTrophies: safeParse('bs_brawlerTrophies', {}),
+    trClaimed: safeParse('bs_trClaimed', []),
     nickname: localStorage.getItem('bs_nick') || '',
     wildPP: parseInt(localStorage.getItem('bs_wildPP')) || 0, // Дикие очки силы
-    unlocked: JSON.parse(localStorage.getItem('bs_unlocked')) || ['shelly'], 
+    unlocked: safeParse('bs_unlocked', ['shelly']), 
     ppToDistribute: 0, // Очки силы для распределения
-    powerPoints: JSON.parse(localStorage.getItem('bs_pp')) || {}, // {shelly: 0, colt: 10...}
-    levels: JSON.parse(localStorage.getItem('bs_levels')) || {}, // {shelly: 1, colt: 1...}
+    powerPoints: safeParse('bs_pp', {}),
+    levels: safeParse('bs_levels', {}),
+    skins: safeParse('bs_skins', {}),
+    curSkin: safeParse('bs_curSkin', {}),
+    shop: safeParse('bs_shop', { nextRefresh: 0, items: [] }),
+    brawlidaysClaimed: safeParse('bs_brawlidays_claimed', false), // Статус получения
+    brawlidaysExpiry: parseInt(localStorage.getItem('bs_brawlidays_expiry')) || 0, // Время окончания акции
     selected: 'shelly', inGame: false 
 };
 const canvas = document.getElementById('gameCanvas');
@@ -41,13 +71,28 @@ const ctx = canvas.getContext('2d');
 const screens = { login: document.getElementById('loginScreen'), menu: document.getElementById('menuScreen'), box: document.getElementById('boxScreen'), game: document.getElementById('gameUI'), brawlers: document.getElementById('brawlerSelectScreen'), shop: document.getElementById('shopScreen'), trophyRoad: document.getElementById('trophyRoadScreen'), detail: document.getElementById('brawlerDetailScreen'), news: document.getElementById('newsScreen') };
 const ui = { coins: document.getElementById('coinDisplay'), gems: document.getElementById('gemDisplay'), tokens: document.getElementById('tokenDisplay'), starTokens: document.getElementById('starTokenDisplay'), hp: document.getElementById('hpBar'), ammo: document.getElementById('ammoBar'), specialBar: document.getElementById('specialBar'), specialBarCont: document.getElementById('specialBarCont'), superBtn: document.getElementById('superBtn'), alive: document.getElementById('aliveCount'), gameOver: document.getElementById('gameOverMsg'), showdown: document.getElementById('showdownBanner') };
 
+// ЗАЩИТА ДАННЫХ (Исправление битых сохранений)
+if (!Array.isArray(STATE.unlocked)) STATE.unlocked = ['shelly'];
+if (!Array.isArray(STATE.trClaimed)) STATE.trClaimed = [];
+
 // МИГРАЦИЯ КУБКОВ (Если есть общие, но нет личных)
 if (Object.keys(STATE.brawlerTrophies).length === 0 && STATE.trophies > 0) {
     // Записываем все существующие кубки на выбранного бойца (или Шелли по дефолту)
     STATE.brawlerTrophies[STATE.selected] = STATE.trophies;
 }
+
+// ПРИНУДИТЕЛЬНОЕ ОБНОВЛЕНИЕ МАГАЗИНА (Для применения новых цен и таймера)
+if (!localStorage.getItem('bs_shop_update_v7')) {
+    STATE.shop = { nextRefresh: 0, items: [] };
+    localStorage.setItem('bs_shop_update_v7', 'true');
+    try { generateShopItems(); } catch(e) { console.error(e); } // Генерируем СРАЗУ
+    saveGame();
+}
+
 // Инициализация нулей для новых бойцов
 Object.keys(BRAWLERS).forEach(k => { if (STATE.brawlerTrophies[k] === undefined) STATE.brawlerTrophies[k] = 0; });
+// Инициализация скинов
+Object.keys(BRAWLERS).forEach(k => { if (!STATE.skins[k]) STATE.skins[k] = ['default']; if (!STATE.curSkin[k]) STATE.curSkin[k] = 'default'; });
 
 
 // НИКИ БОТОВ
@@ -56,7 +101,7 @@ const BOT_NAMES = ["Tomar753", "хочу легу", "дайте эдгара", "
 // ПРЕДЗАГРУЗКА РЕСУРСОВ (Оптимизация памяти и лагов)
 const ASSETS = {};
 function loadAssets() {
-    const list = ['bear_model.png'];
+    const list = ['bear_model.png', 'stu_proj.png']; // Добавили поддержку картинки снаряда
     Object.values(BRAWLERS).forEach(b => { if(!list.includes(b.img)) list.push(b.img); });
     list.forEach(src => {
         const img = new Image();
@@ -107,8 +152,24 @@ function updateMenu() {
     document.getElementById('profileName').innerText = STATE.nickname || 'PLAYER';
 
     // Обновление героя в лобби
+    // ЗАЩИТА: Проверяем существование бойца, если нет - ставим Шелли
+    if (!BRAWLERS[STATE.selected]) STATE.selected = 'shelly';
+
     const b = BRAWLERS[STATE.selected];
+    
+    // ЗАЩИТА: Проверяем скин, если битый - ставим дефолт
+    let skinKey = STATE.curSkin[STATE.selected];
+    if (!skinKey || !SKINS[skinKey]) skinKey = 'default';
+    
+    const skinData = SKINS[skinKey];
+    
     document.getElementById('heroImg').src = b.img;
+    document.getElementById('heroImg').style.filter = skinData.filter; // Применяем скин в лобби
+
+    // СТУ и СПАЙК: Уменьшаем модельку в лобби, чтобы влезали
+    if (STATE.selected === 'stu' || STATE.selected === 'spike') document.getElementById('heroImg').style.transform = 'scale(0.7)';
+    else document.getElementById('heroImg').style.transform = 'scale(1)';
+    
     document.getElementById('heroTrophies').innerHTML = `<img src="trophy_icon.png" style="width: 20px;"> ${STATE.brawlerTrophies[STATE.selected]}`;
 }
 function saveGame() { 
@@ -124,6 +185,11 @@ function saveGame() {
     localStorage.setItem('bs_unlocked', JSON.stringify(STATE.unlocked));
     localStorage.setItem('bs_pp', JSON.stringify(STATE.powerPoints));
     localStorage.setItem('bs_levels', JSON.stringify(STATE.levels));
+    localStorage.setItem('bs_skins', JSON.stringify(STATE.skins));
+    localStorage.setItem('bs_curSkin', JSON.stringify(STATE.curSkin));
+    localStorage.setItem('bs_shop', JSON.stringify(STATE.shop));
+    localStorage.setItem('bs_brawlidays_claimed', JSON.stringify(STATE.brawlidaysClaimed));
+    localStorage.setItem('bs_brawlidays_expiry', STATE.brawlidaysExpiry);
 }
 // Надежное сохранение для мобильных и ПК (при закрытии/сворачивании)
 window.addEventListener('pagehide', saveGame);
@@ -138,25 +204,25 @@ if (!localStorage.getItem('bs_bonus_1k_gems')) {
     setTimeout(() => alert("🎁 В ЧЕСТЬ ОБНОВЛЕНИЯ ВАМ НАЧИСЛЕНО 1000 ГЕМОВ!"), 1000);
 }
 
-// БОНУС: 1000 ГЕМОВ ВСЕМ (Единоразово)
-if (!localStorage.getItem('bs_bonus_1k_gems')) {
-    STATE.gems += 1000;
-    localStorage.setItem('bs_bonus_1k_gems', 'true');
-    saveGame();
-    setTimeout(() => alert("🎁 В ЧЕСТЬ ОБНОВЛЕНИЯ ВАМ НАЧИСЛЕНО 1000 ГЕМОВ!"), 1000);
-}
-
 // ЛОГИН
 document.getElementById('loginScreen').addEventListener('click', (e) => {
-    // Если форма уже открыта, не реагируем на клики по фону (чтобы можно было ввести ник)
-    if (!document.getElementById('loginForm').classList.contains('hidden')) return;
+    try {
+        // Если клик был по форме или инпуту - не перехватываем
+        if (e.target.closest('#loginForm')) return;
+        // Если форма открыта - игнорируем клики по фону
+        if (!document.getElementById('loginForm').classList.contains('hidden')) return; 
 
-    if (STATE.nickname) {
+        if (STATE.nickname) {
+            showScreen('menu');
+            updateMenu();
+        } else {
+            document.getElementById('tapToPlay').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+    } catch (err) {
+        console.error("Ошибка входа:", err);
+        // Аварийный вход в меню, если что-то сломалось
         showScreen('menu');
-        updateMenu();
-    } else {
-        document.getElementById('tapToPlay').classList.add('hidden');
-        document.getElementById('loginForm').classList.remove('hidden');
     }
 });
 document.getElementById('confirmLoginBtn').addEventListener('click', () => {
@@ -166,27 +232,28 @@ document.getElementById('confirmLoginBtn').addEventListener('click', () => {
         saveGame();
         showScreen('menu');
         updateMenu();
+    } else {
+        alert("Введите имя!");
     }
 });
 
-// Кнопки меню
+// Кнопки меню и магазина
 document.getElementById('brawlBoxBtn').addEventListener('click', () => {
     if (STATE.tokens >= 20) { STATE.tokens -= 20; saveGame(); updateMenu(); showScreen('box'); openBox('small'); } else alert('Нужно 20 токенов!');
 });
 document.getElementById('bigBoxBtn').addEventListener('click', () => {
     if (STATE.starTokens >= 5) { STATE.starTokens -= 5; saveGame(); updateMenu(); showScreen('box'); openBox('big'); } else alert('Нужно 5 зв. токенов!');
 });
+// --- ВОЗВРАЩЕННЫЕ КНОПКИ МАГАЗИНА ---
 document.getElementById('megaBoxBtn').addEventListener('click', () => {
     if (STATE.gems >= 80) { STATE.gems -= 80; saveGame(); updateMenu(); showScreen('box'); openBox('mega'); } else alert('Нужно 80 гемов!');
 });
-// Покупка монет
 document.getElementById('buyCoinsBtn').addEventListener('click', () => {
     if (STATE.gems >= 10) { 
         STATE.gems -= 10; STATE.coins += 150; 
         saveGame(); updateMenu(); alert("Вы купили 150 монет!"); 
     } else alert('Нужно 10 гемов!');
 });
-// Покупка очков силы
 document.getElementById('buyPpBtn').addEventListener('click', () => {
     if (STATE.gems >= 25) {
         STATE.gems -= 25;
@@ -194,9 +261,29 @@ document.getElementById('buyPpBtn').addEventListener('click', () => {
         renderBrawlersList(); showScreen('brawlers'); // Перекидываем на выбор бойца
     } else alert('Нужно 25 гемов!');
 });
+// Кнопка BRAWLIDAYS
+document.getElementById('brawlidaysBtn').addEventListener('click', () => {
+    if (STATE.brawlidaysClaimed) return;
+    STATE.coins += 1500;
+    STATE.brawlidaysClaimed = true;
+    saveGame(); updateMenu(); renderShop(); alert("🎁 ВЫ ПОЛУЧИЛИ 1500 МОНЕТ!");
+});
+// -------------------------------------
 document.getElementById('backToMenuBtn').addEventListener('click', () => showScreen('menu'));
 document.getElementById('playBtn').addEventListener('click', () => showScreen('game'));
-document.getElementById('shopBtn').addEventListener('click', () => showScreen('shop'));
+document.getElementById('shopBtn').addEventListener('click', () => {
+    try {
+        checkShopRefresh();
+        renderShop();
+    } catch (e) {
+        console.warn("Ошибка магазина, сброс данных...", e);
+        STATE.shop = { nextRefresh: 0, items: [] }; // Полный сброс магазина
+        saveGame();
+        try { checkShopRefresh(); renderShop(); } catch(e2) {}
+    }
+    // Открываем экран в любом случае, даже если рендер сбойнул (будет пустой, но откроется)
+    showScreen('shop');
+});
 document.getElementById('brawlersBtn').addEventListener('click', () => {
     renderBrawlersList();
     showScreen('brawlers');
@@ -208,6 +295,7 @@ document.getElementById('trophyBtn').addEventListener('click', () => {
 
 // Новости
 document.querySelector('.news-btn').addEventListener('click', () => {
+    renderNews('latest'); // Загружаем свежие новости
     showScreen('news');
 });
 // Нажатие на героя в лобби
@@ -234,30 +322,45 @@ function renderBrawlersList() {
         const b = BRAWLERS[key];
         const isUnlocked = STATE.unlocked.includes(key);
         const el = document.createElement('div');
+        // Добавляем защиту от кликов по закрытым бойцам визуально
         el.className = `brawler-item ${b.rarity} ${isUnlocked ? '' : 'locked'}`;
         el.innerHTML = `<img src="${b.ava}" class="brawler-avatar"><div>${b.n}</div><div class="brawler-trophies"><img src="trophy_icon.png" style="width:10px"> ${STATE.brawlerTrophies[key]}</div><div style="font-size:12px">Lvl ${STATE.levels[key]}</div>`;
         
-        if (isUnlocked) {
-            el.onclick = () => {
-                if (STATE.ppToDistribute > 0) {
-                    STATE.powerPoints[key] += STATE.ppToDistribute;
-                    alert(`Начислено ${STATE.ppToDistribute} очков силы бойцу ${b.n}!`);
-                    STATE.ppToDistribute = 0;
-                    saveGame(); updateMenu(); renderBrawlersList();
-                } else {
-                    showBrawlerDetails(key);
+        el.onclick = () => {
+            try {
+                if (!isUnlocked) {
+                    alert("Этот боец еще не разблокирован! Ищите его в ящиках.");
+                    return;
                 }
-            };
-        }
+                    if (STATE.ppToDistribute > 0) {
+                        if ((STATE.levels[key] || 1) >= 9) {
+                            alert("Этот боец уже максимального уровня!");
+                        } else {
+                            STATE.powerPoints[key] += STATE.ppToDistribute;
+                            alert(`Начислено ${STATE.ppToDistribute} очков силы бойцу ${b.n}!`);
+                            STATE.ppToDistribute = 0;
+                            saveGame(); updateMenu(); renderBrawlersList();
+                        }
+                    } else {
+                        showBrawlerDetails(key);
+                    }
+            } catch (e) {
+                console.error("Ошибка выбора бойца:", e);
+                alert("Сбой выбора: " + e.message);
+            }
+        };
         list.appendChild(el);
     });
 }
 
 function showBrawlerDetails(key) {
+    try {
     const b = BRAWLERS[key];
     const lvl = STATE.levels[key] || 1;
     const pp = STATE.powerPoints[key] || 0;
     const tr = STATE.brawlerTrophies[key] || 0;
+    // ЗАЩИТА: Если скин записан криво, берем дефолтный
+    const currentSkin = (STATE.curSkin[key] && SKINS[STATE.curSkin[key]]) ? STATE.curSkin[key] : 'default';
     
     // Расчет статов: База = Макс / (1 + 8*Pct). Текущий = База * (1 + (Lvl-1)*Pct)
     // HP Pct = 0.07, Dmg Pct = 0.05
@@ -279,22 +382,56 @@ function showBrawlerDetails(key) {
     
     let superDesc = "Урон от супера";
     if (key === 'shelly') superDesc = "Урон: 400 x 9";
-    else if (key === 'colt') superDesc = "Урон: 286 x 12";
+    else if (key === 'colt') superDesc = "Урон: 330 x 12";
     else if (key === 'nita') superDesc = "Урон: " + Math.floor(600 * (1 + (lvl - 1) * 0.05)); // Урон медведя
     else if (key === 'spike') superDesc = "Урон: 261 / сек";
-    else if (key === 'mortis') superDesc = "Урон: 1680";
+    else if (key === 'mortis') superDesc = "Урон: 1350";
+    else if (key === 'stu') superDesc = "Урон: 150 x 6";
     document.getElementById('detailSuper').innerText = superDesc;
     document.getElementById('detailSpd').innerText = b.spd > 6 ? "Fast" : (b.spd < 5 ? "Slow" : "Norm");
     document.getElementById('detailRld').innerText = b.rld < 60 ? "Fast" : (b.rld > 80 ? "Slow" : "Norm");
     document.getElementById('detailImg').src = b.img;
+    document.getElementById('detailImg').style.filter = (SKINS[currentSkin] || SKINS.default).filter; // Показываем текущий скин
+
+    // Рендер кнопок скинов
+    const skinCont = document.getElementById('skinSelector');
+    if (skinCont) {
+        skinCont.innerHTML = '';
+        Object.keys(SKINS).forEach(sKey => {
+            const sData = SKINS[sKey];
+            const owned = STATE.skins[key].includes(sKey);
+            const btn = document.createElement('div');
+            btn.className = `skin-btn ${currentSkin === sKey ? 'selected' : ''} ${!owned ? 'locked' : ''}`;
+            btn.style.backgroundColor = sData.color;
+            
+            btn.onclick = () => {
+                if (owned) {
+                    STATE.curSkin[key] = sKey;
+                    saveGame(); showBrawlerDetails(key); updateMenu();
+                } else {
+                    if (confirm(`Купить скин "${sData.n}" за ${sData.cost} монет?`)) {
+                        if (STATE.coins >= sData.cost) {
+                            STATE.coins -= sData.cost;
+                            STATE.skins[key].push(sKey);
+                            STATE.curSkin[key] = sKey;
+                            saveGame(); showBrawlerDetails(key); updateMenu(); alert("Скин куплен!");
+                        } else alert("Не хватает монет!");
+                    }
+                }
+            };
+            skinCont.appendChild(btn);
+        });
+    }
 
     // Кнопка Инфо для Ниты
     const infoBtn = document.getElementById('detailInfoBtn');
-    if (key === 'nita') {
-        infoBtn.classList.remove('hidden');
-        infoBtn.onclick = () => document.getElementById('bearModal').classList.remove('hidden');
-    } else {
-        infoBtn.classList.add('hidden');
+    if (infoBtn) { // Защита от ошибки, если кнопки нет
+        if (key === 'nita') {
+            infoBtn.classList.remove('hidden');
+            infoBtn.onclick = () => document.getElementById('bearModal').classList.remove('hidden');
+        } else {
+            infoBtn.classList.add('hidden');
+        }
     }
 
     // Логика улучшения
@@ -348,6 +485,10 @@ function showBrawlerDetails(key) {
     }
 
     showScreen('detail');
+    } catch (e) {
+        console.error("Error showing details:", e);
+        alert("Ошибка меню бойца: " + e.message);
+    }
 }
 
 function openBox(type) {
@@ -382,37 +523,46 @@ function openBox(type) {
         return null;
     };
 
+    // Функция получения уникальных бойцов для очков силы (не макс лвл)
+    const getPPDropsList = (count) => {
+        // Берем только тех, кто не 9 уровня
+        let list = STATE.unlocked.filter(k => (STATE.levels[k] || 1) < 9);
+        list.sort(() => Math.random() - 0.5); // Перемешиваем
+        return list.slice(0, count); // Берем первые count штук
+    };
+
     if (type === 'small') {
         title.innerText = "ЯЩИК";
         // Маленький ящик: ИЛИ боец, ИЛИ ресурсы
         const newBrawler = tryRollBrawler('small');
+
         if (newBrawler) {
             brawlerDrop = BRAWLERS[newBrawler];
             STATE.unlocked.push(newBrawler);
         } else {
-            coins = Math.floor(Math.random() * 25) + 10;
+            coins = Math.floor(Math.random() * 40) + 20; // Больше монет (было 10-35)
             // Очки силы на 2 бойцов
-            for(let i=0; i<2; i++) {
-                let b = STATE.unlocked[Math.floor(Math.random() * STATE.unlocked.length)];
+            const targets = getPPDropsList(2);
+            targets.forEach(b => {
                 let amt = Math.floor(Math.random() * 10) + 10;
                 ppDrops.push({n: BRAWLERS[b].n, a: amt});
                 STATE.powerPoints[b] = (STATE.powerPoints[b] || 0) + amt;
-            }
+            });
             if (Math.random() < 0.33) gems = Math.floor(Math.random() * 3) + 1; // Шанс 33%
         }
     } else {
         // Большой и Мега: Ресурсы + Шанс бойца
         const isMega = type === 'mega';
         title.innerText = isMega ? "МЕГАЯЩИК" : "БОЛЬШОЙ ЯЩИК";
-        coins = isMega ? Math.floor(Math.random() * 113) + 85 : Math.floor(Math.random() * 40) + 30;
+        coins = isMega ? Math.floor(Math.random() * 150) + 100 : Math.floor(Math.random() * 60) + 40; // Больше монет
         
         // Очки силы (3 бойца)
-        for(let i=0; i<3; i++) {
-            let b = STATE.unlocked[Math.floor(Math.random() * STATE.unlocked.length)];
+        const targets = getPPDropsList(3);
+        targets.forEach(b => {
             let amt = isMega ? Math.floor(Math.random() * 50) + 30 : Math.floor(Math.random() * 25) + 15;
             ppDrops.push({n: BRAWLERS[b].n, a: amt});
             STATE.powerPoints[b] = (STATE.powerPoints[b] || 0) + amt;
-        }
+        });
         // Мегаящик: 100% шанс гемов (5-15). Большой: 50% шанс (3-9).
         if (isMega || Math.random() < 0.5) gems = isMega ? (Math.floor(Math.random() * 11) + 5) : (Math.floor(Math.random() * 7) + 3);
 
@@ -436,6 +586,185 @@ function openBox(type) {
     }
     updateMenu();
 }
+
+// ЛОГИКА МАГАЗИНА
+function checkShopRefresh() {
+    const now = Date.now();
+    try {
+        // Если таймера нет или время вышло - обновляем
+        if (!STATE.shop.nextRefresh || isNaN(STATE.shop.nextRefresh) || now > STATE.shop.nextRefresh) {
+            generateShopItems();
+            STATE.shop.nextRefresh = now + (3 * 60 * 60 * 1000); // +3 часа
+            saveGame();
+        }
+    } catch (e) {
+        console.error("Shop refresh error:", e);
+        STATE.shop.nextRefresh = now + (1 * 60 * 60 * 1000); // Аварийный таймер на 1 час, чтобы не висело на 0
+        saveGame();
+    }
+}
+
+function generateShopItems() {
+    // Берем только существующих бойцов (защита от багов сохранения)
+    let pool = STATE.unlocked.filter(k => BRAWLERS[k]);
+    if (pool.length === 0) pool = ['shelly'];
+
+    const items = [];
+    
+    // 1. Подарок (Слот 1)
+    const r = Math.random();
+    if (r < 0.4) items.push({ type: 'gift_coins', val: Math.floor(Math.random()*40)+10, cost: 0, bought: false });
+    else if (r < 0.8) {
+        // Ищем бойца не макс уровня для подарка
+        const giftPool = pool.filter(k => (STATE.levels[k] || 1) <= 9); // Разрешаем макс лвл
+        if (giftPool.length > 0) {
+            const b = giftPool[Math.floor(Math.random()*giftPool.length)];
+            items.push({ type: 'gift_pp', val: Math.floor(Math.random()*15)+5, brawler: b, cost: 0, bought: false });
+        } else {
+            items.push({ type: 'gift_coins', val: 25, cost: 0, bought: false }); // Если все макс, даем монеты
+        }
+    }
+    else items.push({ type: 'gift_box', val: 'small', cost: 0, bought: false });
+
+    // 2. Мегаящик по акции (Слот 2)
+    items.push({ type: 'mega_offer', val: 'mega', cost: 60, oldCost: 80, bought: false });
+
+    // 3. Очки силы (Слоты 3-6)
+    // Берем уникальных бойцов не макс уровня
+    const ppPool = pool.filter(k => (STATE.levels[k] || 1) <= 9); // Разрешаем макс лвл, чтобы магазин не был пустым
+    ppPool.sort(() => Math.random() - 0.5); // Перемешиваем
+
+    for(let i=0; i<4; i++) {
+        if (i >= ppPool.length) break; // Если бойцов не хватает, слотов будет меньше
+        const b = ppPool[i];
+        const amt = Math.floor(Math.random() * 40) + 10; // 10-50 PP
+        const price = Math.ceil(amt * 1.5); // Цена ~1.5 монеты за 1 PP (Выгоднее)
+        items.push({ type: 'pp_deal', brawler: b, val: amt, cost: price, bought: false });
+    }
+    
+    STATE.shop.items = items;
+}
+
+function renderShop() {
+    // ЗАЩИТА: Если товаров нет или произошел сбой сохранения, генерируем заново
+    if (!STATE.shop.items || !Array.isArray(STATE.shop.items) || STATE.shop.items.length === 0) {
+        generateShopItems();
+    }
+
+    // Логика отображения BRAWLIDAYS
+    const brawlSection = document.getElementById('brawlidaysSection');
+    const now = Date.now();
+    
+    if (STATE.brawlidaysClaimed || now > STATE.brawlidaysExpiry) {
+        brawlSection.style.display = 'none';
+    } else {
+        brawlSection.style.display = 'flex';
+        brawlSection.style.flexDirection = 'column';
+        brawlSection.style.alignItems = 'center';
+        brawlSection.style.justifyContent = 'center';
+        brawlSection.style.marginRight = '80px'; // Отступ от акций
+    }
+
+    const grid = document.getElementById('dailyDealsGrid');
+    grid.innerHTML = '';
+    
+    STATE.shop.items.forEach((item, idx) => {
+        // Защита от битых товаров
+        if (!item || !item.type) return;
+
+        const el = document.createElement('div');
+        el.className = `shop-card ${item.bought ? 'purchased' : ''}`;
+        
+        // Стилизация по типу
+        if (item.type.startsWith('gift')) el.classList.add('gift');
+        else if (item.type === 'mega_offer') el.classList.add('mega');
+        else el.classList.add('pp');
+
+        let content = '';
+        let priceHtml = '';
+
+        // Контент карточки
+        if (item.type === 'gift_coins') {
+            content = `<div class="card-title">ПОДАРОК</div><img src="coin_icon.png" class="card-icon"><div>${item.val} МОНЕТ</div>`;
+            priceHtml = `<span class="free-lbl">БЕСПЛАТНО</span>`;
+        } else if (item.type === 'gift_pp') {
+            if (!BRAWLERS[item.brawler]) return; // Защита от ошибок
+            content = `<div class="card-title">ПОДАРОК</div>
+                       <img src="${BRAWLERS[item.brawler].ava}" class="card-brawler-icon">
+                       <div class="pp-amount-box">+${item.val} <img src="pp_icon.png" style="width:12px"></div>`;
+            priceHtml = `<span class="free-lbl">БЕСПЛАТНО</span>`;
+        } else if (item.type === 'gift_box') {
+            content = `<div class="card-title">ПОДАРОК</div><img src="brawl_box.png" class="card-icon"><div>ЯЩИК</div>`;
+            priceHtml = `<span class="free-lbl">БЕСПЛАТНО</span>`;
+        } else if (item.type === 'mega_offer') {
+            content = `<div class="card-title">АКЦИЯ</div><img src="mega_box.png" class="card-icon"><div>МЕГАЯЩИК</div>`;
+            priceHtml = `<span class="old-price">${item.oldCost}</span> ${item.cost} <img src="gem_icon.png" class="tiny-icon">`;
+        } else if (item.type === 'pp_deal') {
+            if (!BRAWLERS[item.brawler]) return; // Защита от ошибок
+            content = `<div class="card-title">СИЛА</div>
+                       <img src="${BRAWLERS[item.brawler].ava}" class="card-brawler-icon">
+                       <div class="pp-amount-box">+${item.val} <img src="pp_icon.png" style="width:12px"></div>`;
+            priceHtml = `${item.cost} <img src="coin_icon.png" class="tiny-icon">`;
+        }
+
+        el.innerHTML = `${content}<div class="card-price">${priceHtml}</div>`;
+        
+        if (!item.bought) {
+            el.onclick = () => buyShopItem(idx);
+        }
+        grid.appendChild(el);
+    });
+}
+
+function buyShopItem(idx) {
+    const item = STATE.shop.items[idx];
+    if (item.bought) return;
+
+    let success = false;
+
+    if (item.cost === 0) { // Подарок
+        success = true;
+    } else if (item.type === 'mega_offer') { // За гемы
+        if (STATE.gems >= item.cost) { STATE.gems -= item.cost; success = true; }
+        else alert("Не хватает гемов!");
+    } else { // За монеты
+        if (STATE.coins >= item.cost) { STATE.coins -= item.cost; success = true; }
+        else alert("Не хватает монет!");
+    }
+
+    if (success) {
+        item.bought = true;
+        // Выдача награды
+        if (item.type === 'gift_coins') STATE.coins += item.val;
+        else if (item.type === 'gift_pp' || item.type === 'pp_deal') {
+            STATE.powerPoints[item.brawler] = (STATE.powerPoints[item.brawler] || 0) + item.val;
+        }
+        else if (item.type === 'gift_box') { showScreen('box'); openBox('small'); }
+        else if (item.type === 'mega_offer') { showScreen('box'); openBox('mega'); }
+
+        saveGame(); updateMenu(); renderShop();
+    }
+}
+
+// Таймер магазина
+setInterval(() => {
+    if (document.getElementById('shopScreen').classList.contains('active')) {
+        let diff = STATE.shop.nextRefresh - Date.now();
+        if (diff <= 0) { checkShopRefresh(); renderShop(); diff = 0; }
+        let h = Math.floor(diff / 3600000);
+        let m = Math.floor((diff % 3600000) / 60000);
+        let s = Math.floor((diff % 60000) / 1000);
+        document.getElementById('shopTimer').innerText = `Новые акции через: ${h}:${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
+    }
+    // Таймер Brawlidays
+    if (!STATE.brawlidaysClaimed && STATE.brawlidaysExpiry > Date.now()) {
+        let diff = STATE.brawlidaysExpiry - Date.now();
+        let h = Math.floor(diff / 3600000);
+        let m = Math.floor((diff % 3600000) / 60000);
+        document.getElementById('brawlidaysTimer').innerText = `Осталось: ${h}ч ${m}м`;
+    }
+}, 1000);
+
 window.returnToMenu = function() {
     showScreen('menu');
     // Полная остановка боевой музыки
@@ -507,6 +836,14 @@ const mouse = { x: 0, y: 0, down: false };
 window.addEventListener('keydown', e => keys[e.code] = true);
 window.addEventListener('keyup', e => keys[e.code] = false);
 window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+// АВТОАТАКА НА ПК (Q)
+window.addEventListener('keydown', e => {
+    if (e.code === 'KeyQ' && G.p && !G.p.dead) {
+        const target = getAutoAimTarget(G.p);
+        if (target) G.p.shoot(target.x, target.y);
+        else G.p.shoot(G.p.x + (G.p.lastDx||1)*100, G.p.y + (G.p.lastDy||0)*100);
+    }
+});
 
 // ОБНОВЛЕННОЕ УПРАВЛЕНИЕ МЫШЬЮ (ПК)
 window.addEventListener('mousedown', (e) => {
@@ -517,6 +854,14 @@ window.addEventListener('mousedown', (e) => {
             G.p.isSuperAiming = false; // Выключаем режим супера
         } else {
             mouse.down = true; // Обычная стрельба
+        }
+    } else if (e.button === 1) { // КОЛЕСИКО (Средняя кнопка)
+        e.preventDefault(); // Чтобы не скроллило
+        if (G.p && !G.p.dead) {
+            // Автоатака
+            const target = getAutoAimTarget(G.p);
+            if (target) G.p.shoot(target.x, target.y);
+            else G.p.shoot(G.p.x + (G.p.lastDx||1)*100, G.p.y + (G.p.lastDy||0)*100);
         }
     } else if (e.button === 2) { // ПКМ
         // Переключение режима Супера
@@ -654,9 +999,14 @@ function setupJoystick(zoneId, knobId, type) {
                     G.p.super((mouse.x / ZOOM) + G.cam.x, (mouse.y / ZOOM) + G.cam.y);
                 } else {
                     // Авто-супер
-                    const target = getAutoAimTarget(G.p);
-                    if (target) G.p.super(target.x, target.y);
-                    else G.p.super(G.p.x + (G.p.lastDx||1)*100, G.p.y + (G.p.lastDy||0)*100);
+                    // СТУ: Рывок всегда по направлению движения
+                    if (G.p.t === 'stu') {
+                        G.p.super(G.p.x + (G.p.lastDx||1)*100, G.p.y + (G.p.lastDy||0)*100);
+                    } else {
+                        const target = getAutoAimTarget(G.p);
+                        if (target) G.p.super(target.x, target.y);
+                        else G.p.super(G.p.x + (G.p.lastDx||1)*100, G.p.y + (G.p.lastDy||0)*100);
+                    }
                 }
             }
         }
@@ -771,6 +1121,11 @@ class Brawler extends Obj {
         this.target = null; // Текущая цель бота
         this.scanTimer = Math.floor(Math.random() * 20); // Случайная задержка сканирования
         this.isSuperAiming = false; // Режим прицеливания супером
+        this.skin = isBot ? 'default' : (STATE.curSkin[type] || 'default'); // Боты теперь всегда стандартные
+        this.campTimer = 0; // Таймер для сидения в кустах
+        this.burnTime = 0; // Таймер горения
+        this.burnTick = 0; // Тик урона от горения
+        this.burnAttacker = null; // Кто поджег
     }
     update() {
         if (this.dead) return;
@@ -778,12 +1133,27 @@ class Brawler extends Obj {
         if (!Number.isFinite(this.x) || !Number.isFinite(this.y)) { this.dead = true; return; }
         if (this.fireCd > 0) this.fireCd--;
         
-        // Регенерация (3% -> 6% -> 12%...)
+        // Эффект горения (Сту)
+        if (this.burnTime > 0) {
+            this.burnTime--;
+            this.burnTick--;
+            if (this.burnTick <= 0) {
+                this.hp -= 150; // Урон от огня
+                this.lastHit = Date.now(); // Сбиваем реген
+                G.floatTexts.push(new FloatingText(this.x, this.y - 40, 150, '#ff6600'));
+                // Зарядка ульты атакующего (4%)
+                if (this.burnAttacker) this.burnAttacker.sup = Math.min(100, this.burnAttacker.sup + 4);
+                this.burnTick = 60; // Урон раз в секунду
+            }
+        }
+
+        // Регенерация (3% -> 5% -> 8%... от МАКСИМАЛЬНОГО HP)
         let now = Date.now();
         if (now - this.lastHit > 2000 && now - this.lastAttackTime > 2000 && !(this instanceof Bear)) { 
             if (now > this.nextRegen && this.hp < this.mHp) {
-                let pct = 0.03 * Math.pow(2, this.regenStage);
-                this.hp = Math.min(this.mHp, this.hp + this.mHp * pct);
+                const rates = [0.03, 0.05, 0.08, 0.13, 0.20, 0.30, 0.45, 0.65, 0.85, 1.0];
+                let pct = rates[Math.min(this.regenStage, rates.length - 1)];
+                this.hp = Math.min(this.mHp, this.hp + Math.ceil(this.mHp * pct)); // Хил от общего здоровья
                 this.regenStage++;
                 this.nextRegen = now + 1000;
             }
@@ -804,7 +1174,7 @@ class Brawler extends Obj {
 
         if (this.hp <= 0) { 
             this.dead = true; 
-            dropCube(this.x, this.y); 
+            if (this.t !== 'bear') dropCube(this.x, this.y); // Медведь не роняет банки
             return; 
         }
 
@@ -825,16 +1195,24 @@ class Brawler extends Obj {
             }
 
             if (mouse.down && !this.isSuperAiming) this.shoot((mouse.x / ZOOM) + G.cam.x, (mouse.y / ZOOM) + G.cam.y);
-            if (keys['KeyE'] && this.sup >= 100) this.super((mouse.x / ZOOM) + G.cam.x, (mouse.y / ZOOM) + G.cam.y);
+            if (keys['KeyE'] && this.sup >= 100) {
+                // СТУ: Рывок по направлению движения при нажатии E
+                if (this.t === 'stu') {
+                    this.super(this.x + (this.lastDx||1)*100, this.y + (this.lastDy||0)*100);
+                } else {
+                    this.super((mouse.x / ZOOM) + G.cam.x, (mouse.y / ZOOM) + G.cam.y);
+                }
+            }
         } else {
             // AI: Ищет ближайшую цель (игрок, бот или ящик)
             // ОПТИМИЗАЦИЯ: Строгое ограничение сканирования (раз в 15 кадров)
             this.scanTimer++;
-            // ОПТИМИЗАЦИЯ: Сканируем реже (30 кадров = 0.5 сек) и только если нет близкой цели
-            if (this.scanTimer > 30 || !this.target || this.target.dead) {
-                if (this.scanTimer > 30) { 
+            // ОПТИМИЗАЦИЯ: Сканируем реже (15 кадров = 0.25 сек) для лучшей реакции
+            if (this.scanTimer > 15 || !this.target || this.target.dead) {
+                if (this.scanTimer > 15) { 
                 let minD = 1000;
                 this.target = null;
+                // Поиск врагов и ящиков
                 [G.p, ...G.en, ...G.boxes].forEach(e => {
                     if (e === this || e.dead) return;
                     if (e instanceof Brawler && e.team === this.team) return; // Не атакуем своих
@@ -844,6 +1222,7 @@ class Brawler extends Obj {
                     if (Math.hypot(e.x - this.x, e.y - this.y) > 1000) return;
                     // Проверка стен (не видим сквозь стены)
                     if (checkWallLine(this.x, this.y, e.x, e.y)) return;
+                    if (this instanceof Bear && e instanceof Box) return; // Медведь игнорирует ящики
                     let d = Math.hypot(e.x - this.x, e.y - this.y);
                     if (d < minD) { minD = d; this.target = e; }
                 });
@@ -853,6 +1232,16 @@ class Brawler extends Obj {
             
             let target = this.target;
             let minD = target ? Math.hypot(target.x - this.x, target.y - this.y) : 1000;
+            
+            // Поиск ближайшей банки (Power Cube)
+            let targetCube = null;
+            let minCubeD = 500; // Видим банки только в радиусе 500
+            if (!(this instanceof Bear)) { // Медведь не собирает банки
+                G.cubes.forEach(c => {
+                    let d = Math.hypot(c.x - this.x, c.y - this.y);
+                    if (d < minCubeD) { minCubeD = d; targetCube = c; }
+                });
+            }
 
             // 1. Боимся зоны (приоритет)
             let distToCenter = Math.hypot(this.x, this.y);
@@ -860,26 +1249,84 @@ class Brawler extends Obj {
                 // Бежим в центр
                 let angle = Math.atan2(0 - this.y, 0 - this.x);
                 dx = Math.cos(angle); dy = Math.sin(angle);
+                this.campTimer = 0;
             } 
             // 2. Если мало ХП - убегаем
             else if (this.hp < this.mHp * 0.3 && target && !(this instanceof Bear)) { // Медведь не убегает
                 let angle = Math.atan2(target.y - this.y, target.x - this.x);
                 dx = -Math.cos(angle); dy = -Math.sin(angle);
+                this.campTimer = 0;
             }
-            // 3. Атака
+            // 3. Сбор банок (если безопасно)
+            else if (targetCube && (!target || minD > 300)) {
+                let angle = Math.atan2(targetCube.y - this.y, targetCube.x - this.x);
+                dx = Math.cos(angle); dy = Math.sin(angle);
+                this.campTimer = 0;
+            }
+            // 4. Засада в кустах (Кемперство)
+            else if (checkBush(this.x, this.y) && target && minD > 250 && minD < 600 && this.hp > this.mHp * 0.8 && !(this instanceof Bear)) {
+                // Если мы в кустах, здоровы, и враг где-то рядом, но не в упор - сидим тихо
+                this.campTimer++;
+                if (this.campTimer < 100) { // Сидим не вечно
+                    dx = 0; dy = 0; // Стоим
+                    // Если враг подошел близко - В АТАКУ!
+                    if (minD < 300) this.campTimer = 1000; 
+                } else {
+                    // Надоело сидеть, идем в атаку
+                    let angle = Math.atan2(target.y - this.y, target.x - this.x);
+                    dx = Math.cos(angle); dy = Math.sin(angle);
+                }
+            }
+            // 5. Атака
             else if (target) {
+                this.campTimer = 0;
                 // Медведь всегда идет в атаку
+                let stopDist = this.rng * 0.7; // Базовая дистанция
+                let retreatDist = 100; // Базовая дистанция отступления (кайт)
+                
+                // ИСКЛЮЧЕНИЯ ДЛЯ БОТОВ:
+                if (target instanceof Box) {
+                    stopDist = 10; // К ящикам подходим ВПЛОТНУЮ
+                    retreatDist = 0;
+                } else {
+                    // Тактика в зависимости от бойца
+                    if (this.t === 'colt') {
+                        stopDist = this.rng * 0.85; // Кольт держит максимальную дистанцию (Снайпер)
+                        retreatDist = this.rng * 0.5; // Убегает, если враг подошел слишком близко
+                    } else if (this.t === 'shelly') {
+                        stopDist = 20; // Шелли идет в полный контакт (Агрессор)
+                        retreatDist = 0;
+                    } else if (this.t === 'mortis') {
+                        stopDist = 5; // Мортис идет в упор
+                        retreatDist = 0;
+                    } else if (this.t === 'stu') {
+                        stopDist = 220; // Сту держит среднюю дистанцию (как Шелли)
+                        retreatDist = 120;
+                    } else if (this.t === 'nita') {
+                        stopDist = 150; // Нита держит среднюю дистанцию
+                        retreatDist = 50;
+                    }
+                }
+
                 if (this instanceof Bear) {
                     if (minD > this.rng * 0.7) { dx = (target.x - this.x)/minD; dy = (target.y - this.y)/minD; }
                 } else {
                     // Обычные боты теперь тоже двигаются (держат дистанцию)
-                    if (minD > 250) { dx = (target.x - this.x)/minD; dy = (target.y - this.y)/minD; }
-                    else if (minD < 100) { dx = -(target.x - this.x)/minD; dy = -(target.y - this.y)/minD; }
+                    if (minD > stopDist) { dx = (target.x - this.x)/minD; dy = (target.y - this.y)/minD; } // Идем к цели
+                    else if (minD < retreatDist) { dx = -(target.x - this.x)/minD; dy = -(target.y - this.y)/minD; } // Кайтим (отходим)
+                    
+                    // БОТЫ: Мансование (Juking)
+                    if (this.bot && (dx !== 0 || dy !== 0)) {
+                        let perpX = -dy;
+                        let perpY = dx;
+                        let juke = Math.sin(Date.now() / 200) * 0.5; // Виляние
+                        dx += perpX * juke; dy += perpY * juke;
+                    }
                 }
                 
                 // Атака и Супер (Боты стали умнее)
-                if (this.sup >= 100 && minD < 350) this.super(target.x, target.y);
-                else if (this.ammo > 0 && Math.random() < 0.03) this.shoot(target.x, target.y); // Стреляют реже (0.03)
+                if (this.sup >= 100 && minD < this.rng + 100 && this.fireCd <= 0) this.super(target.x, target.y); // Используем супер, если враг в радиусе и нет КД
+                else if (this.ammo > 0 && Math.random() < 0.05) this.shoot(target.x, target.y); // Стреляют чаще (0.05)
             } else {
                 // Идти в центр если нет целей
                 let d = Math.hypot(0-this.x, 0-this.y);
@@ -906,7 +1353,7 @@ class Brawler extends Obj {
         let rangeMult = 1;
         if (this.t === 'mortis' && Date.now() - this.lastAttackTime > 3000) rangeMult = 1.45;
 
-        this.ammo--; this.fireCd = 8; // Базовая задержка
+        this.ammo--; this.fireCd = 27; // КД 0.45 сек (было 21 кадр)
         this.lastAttackTime = Date.now(); 
         if (this.t === 'mortis') this.fireCd = 18; // КД 0.3 сек (18 кадров) для Мортиса
         
@@ -959,6 +1406,17 @@ class Brawler extends Obj {
                     G.bul.push(new Bullet(this.x, this.y, Math.cos(a)*18, Math.sin(a)*18, this.dmg*(1+this.cubes*0.1), this, s.rng));
                 }, i * 82); // Интервал между пулями (чуть медленнее)
             }
+        } else if (this.t === 'stu') {
+            // СТУ: 2 фейерверка (Сближены, чтобы картинка не двоилась визуально)
+            // Правый
+            let bx1 = this.x + Math.cos(a + Math.PI/2) * 8 + Math.cos(a) * 15; // Было 20, стало 8
+            let by1 = this.y + Math.sin(a + Math.PI/2) * 8 + Math.sin(a) * 15;
+            // Левый
+            let bx2 = this.x + Math.cos(a - Math.PI/2) * 8; // Было 20, стало 8
+            let by2 = this.y + Math.sin(a - Math.PI/2) * 8;
+
+            G.bul.push(new Bullet(bx1, by1, Math.cos(a)*16, Math.sin(a)*16, this.dmg*(1+this.cubes*0.1), this, s.rng, false, false, false, true)); // isStu=true
+            G.bul.push(new Bullet(bx2, by2, Math.cos(a)*16, Math.sin(a)*16, this.dmg*(1+this.cubes*0.1), this, s.rng, false, false, false, true));
         } else {
             for(let i=0; i<s.bul; i++) {
                 let fa = a + (Math.random()-0.5)*s.spr;
@@ -970,6 +1428,7 @@ class Brawler extends Obj {
     }
     super(tx, ty) {
         this.sup = 0;
+        this.fireCd = 27; // Добавляем задержку после супера (чтобы боты не спамили)
         const a = Math.atan2(ty - this.y, tx - this.x);
         let dist = Math.hypot(tx - this.x, ty - this.y);
         
@@ -1019,6 +1478,23 @@ class Brawler extends Obj {
             // Один большой рой мышей (размер задается в Bullet)
             G.bul.push(new Bullet(this.x, this.y, Math.cos(a)*15, Math.sin(a)*15, 1680*(1+this.cubes*0.1), this, 600, true, false, true));
         }
+        // СТУ: Рывок с огнем
+        else if (this.t === 'stu') {
+            let dashDist = 130; // Еще короче (было 180)
+            let steps = 10;
+            let moved = 0;
+            while(moved < dashDist) {
+                let nx = this.x + Math.cos(a) * steps;
+                let ny = this.y + Math.sin(a) * steps;
+                if (checkWall(nx, ny)) break;
+                this.x = nx; this.y = ny;
+                moved += steps;
+                // Оставляем огонь каждые 30 пикселей
+                if (moved % 30 === 0) G.zones.push(new Zone(this.x, this.y, 150, 150, this, 'fire', a));
+            }
+            // Финальный огонь
+            G.zones.push(new Zone(this.x, this.y, 150, 150, this, 'fire', a));
+        }
     }
     draw(ctx) {
         // ОТРИСОВКА ПРИЦЕЛА (Только для игрока)
@@ -1043,6 +1519,7 @@ class Brawler extends Obj {
                 else if (this.t === 'nita') { range = 500; spread = 0; } 
                 else if (this.t === 'spike') { range = 500; spread = 0; }
                 else if (this.t === 'mortis') { range = 600; spread = 0; } // Прямоугольник (spread 0)
+                else if (this.t === 'stu') { range = 130; spread = 0; } // Рывок (Исправлено отображение)
             }
 
             // Угол к мышке
@@ -1095,12 +1572,16 @@ class Brawler extends Obj {
             const h = 90; // Высота модели
             const w = h * (this.imgObj.naturalWidth / this.imgObj.naturalHeight);
             
+            // Применяем фильтр скина
+            ctx.save();
+            if (this.skin && SKINS[this.skin]) ctx.filter = SKINS[this.skin].filter;
+            else ctx.filter = 'none'; // Сброс фильтра на всякий случай
+
             // Красный оттенок для вражеского медведя
             if (this.name === "Bear" && this.team !== 0) {
-                ctx.save();
-                ctx.filter = 'sepia(1) hue-rotate(-50deg) saturate(5)'; // Делаем красным
+                // Комбинируем фильтр скина с красным оттенком (сложно, поэтому просто красный)
+                ctx.filter = 'sepia(1) hue-rotate(-50deg) saturate(5)'; 
                 ctx.drawImage(this.imgObj, this.x - w / 2, this.y - h + 15, w, h);
-                ctx.restore();
             } 
             // Уменьшаем Спайка в игре
             else if (this.t === 'spike') {
@@ -1109,6 +1590,7 @@ class Brawler extends Obj {
             } else {
                 ctx.drawImage(this.imgObj, this.x - w / 2, this.y - h + 15, w, h);
             }
+            ctx.restore();
         } else {
             // Если картинка не загрузилась, рисуем круг
             super.draw(ctx);
@@ -1126,7 +1608,7 @@ class Brawler extends Obj {
         ctx.fillText(this.name, this.x, this.y-95);
         
         // Банки (иконка над головой)
-        if (this.cubes > 0) {
+        if (this.cubes > 0 && this.t !== 'bear') { // Не показываем банки над медведем
             ctx.fillStyle = '#00ff00'; ctx.font = 'bold 14px Arial';
             ctx.fillText(`🟩 ${this.cubes}`, this.x, this.y-110);
         }
@@ -1162,21 +1644,43 @@ class Bear extends Brawler {
 }
 
 class Bullet extends Obj {
-    constructor(x, y, vx, vy, dmg, owner, rng, isSup=false, isSplash=false, isLifesteal=false) {
+    constructor(x, y, vx, vy, dmg, owner, rng, isSup=false, isSplash=false, isLifesteal=false, isStu=false) {
         let size = isSup ? 12 : 6;
         if (owner.t === 'mortis' && isSup) size = 25; // Увеличенный размер ульты Мортиса
+        if (isStu) size = 10; // Увеличенный хитбокс для Сту
         
         super(x, y, size, isSup?'yellow':'orange');
-        this.vx=vx; this.vy=vy; this.dmg=dmg; this.owner=owner; this.rng=rng; this.dist=0; this.isSup=isSup; this.isSplash=isSplash; this.isLifesteal=isLifesteal;
+        this.vx=vx; this.vy=vy; this.dmg=dmg; this.owner=owner; this.rng=rng; this.dist=0; this.isSup=isSup; this.isSplash=isSplash; this.isLifesteal=isLifesteal; this.isStu=isStu;
         this.hitList = []; // Список тех, кого уже задела волна (для Ниты)
+        
+        // Для Сту: параметры маневрирования
+        if (this.isStu) {
+            this.baseAngle = Math.atan2(vy, vx); // Запоминаем основное направление
+            this.speed = Math.hypot(vx, vy);     // Запоминаем скорость
+            this.wobblePhase = 0;                // Фаза колебания
+        }
     }
     update() {
+        // СТУ: Маневрирование (изменение вектора скорости)
+        if (this.isStu) {
+            // wave меняет угол полета. 0.05 - частота, 0.3 - амплитуда (чем больше, тем сильнее виляет)
+            let wave = Math.sin(this.dist * 0.05) * 0.3; 
+            let currentAngle = this.baseAngle + wave;
+            
+            this.vx = Math.cos(currentAngle) * this.speed;
+            this.vy = Math.sin(currentAngle) * this.speed;
+        }
+
         this.x += this.vx; this.y += this.vy; this.dist += Math.hypot(this.vx, this.vy);
         // Проверка стен
         let wIdx = G.walls.findIndex(w => this.x > w.x && this.x < w.x+w.w && this.y > w.y && this.y < w.y+w.h);
         if (wIdx !== -1) {
             if (this.isSup) { if (this.owner.t !== 'mortis') G.walls.splice(wIdx, 1); } // Ульта ломает стены (кроме Мортиса)
-            else this.dead = true;
+            else {
+                this.dead = true;
+                // СПАЙК: Шипы об стену
+                if (this.owner.t === 'spike' && this.isSpikeMain) spawnSpikes(this);
+            }
         }
         // Ульта ломает кусты
         if (this.isSup) {
@@ -1186,12 +1690,7 @@ class Bullet extends Obj {
         if (this.dist >= this.rng) {
             this.dead = true;
             // СПАЙК: Разлет иголок
-            if (this.owner.t === 'spike' && !this.isSup && this.isSpikeMain) { // Проверяем, что это основной снаряд
-                for(let i=0; i<5; i++) {
-                    let a = (Math.PI*2/5)*i;
-                    G.bul.push(new Bullet(this.x, this.y, Math.cos(a)*15, Math.sin(a)*15, 300, this.owner, 150));
-                }
-            }
+            if (this.owner.t === 'spike' && !this.isSup && this.isSpikeMain) spawnSpikes(this);
         }
     }
     draw(ctx) {
@@ -1220,23 +1719,52 @@ class Bullet extends Obj {
             ctx.strokeStyle = '#ff00ff'; ctx.lineWidth = 2; 
             ctx.strokeRect(-20, -30, 40, 60);
             ctx.restore();
+        } else if (this.isStu) {
+            // Фейерверк Сту
+            const img = ASSETS['stu_proj.png'];
+            if (img && img.complete && img.naturalHeight !== 0) {
+                // Если есть картинка - рисуем её
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.baseAngle); // Рисуем по основному направлению, чтобы сама картинка не дергалась дико
+                ctx.drawImage(img, -30, -15, 60, 30); // Увеличенный масштаб (было 40x20)
+                ctx.restore();
+            } else {
+                // Если картинки нет - рисуем красивую ракету
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.baseAngle);
+                ctx.fillStyle = '#00ffff'; ctx.fillRect(-10, -4, 20, 8); // Тело
+                ctx.fillStyle = '#ffaa00'; ctx.fillRect(-14, -2, 4, 4); // Огонь сзади
+                ctx.restore();
+            }
         } else {
             super.draw(ctx);
         }
     }
 }
 
-// ЗОНА (Ульта Спайка)
+// ЗОНА (Ульта Спайка и Огонь Сту)
 class Zone {
-    constructor(x, y, dmg, life, owner) {
-        this.x = x; this.y = y; this.dmg = dmg; this.life = life; this.owner = owner; this.r = 120;
+    constructor(x, y, dmg, life, owner, type='spike', angle=0) {
+        this.x = x; this.y = y; this.dmg = dmg; this.life = life; this.owner = owner; this.r = type==='fire'?25:120; this.type = type; this.angle = angle;
     }
     update() {
         this.life--;
     }
     draw(ctx) {
-        ctx.fillStyle = 'rgba(0, 255, 0, 0.3)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill();
-        ctx.strokeStyle = '#005500'; ctx.lineWidth = 2; ctx.stroke();
+        if (this.type === 'fire') {
+            // Прямой след (прямоугольник)
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.angle);
+            ctx.fillStyle = `rgba(255, 100, 0, ${this.life/150})`; 
+            ctx.fillRect(-10, -20, 20, 40); // Прямоугольник вместо круга
+            ctx.restore();
+        } else {
+            ctx.fillStyle = 'rgba(0, 255, 0, 0.3)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = '#005500'; ctx.lineWidth = 2; ctx.stroke();
+        }
     }
 }
 
@@ -1300,7 +1828,7 @@ function generateMap() {
     // Стены и кусты (с проверкой наложения)
     let attempts = 0;
     // ОПТИМИЗАЦИЯ: Уменьшили кол-во стен и попыток, чтобы не зависало при старте
-    while(G.walls.length < 50 && attempts < 1000) {
+    while(G.walls.length < 90 && attempts < 3000) { // Больше стен (90) и попыток
         let x = (Math.random()-0.5)*G.w*1.95, y = (Math.random()-0.5)*G.h*1.95; // Разброс по всей карте
         // Проверяем, не накладывается ли стена на другую (с запасом 110px)
         if (!G.walls.some(w => Math.abs(x - w.x) < 120 && Math.abs(y - w.y) < 120)) {
@@ -1310,7 +1838,13 @@ function generateMap() {
         attempts++;
     }
     // Ящики
-    for(let i=0; i<18; i++) G.boxes.push(new Box((Math.random()-0.5)*G.w*1.8, (Math.random()-0.5)*G.h*1.8));
+    for(let i=0; i<18; i++) {
+        let bx = (Math.random()-0.5)*G.w*1.8;
+        let by = (Math.random()-0.5)*G.h*1.8;
+        // Проверка: не спавнить ящик ВНУТРИ стены
+        let inWall = G.walls.some(w => bx > w.x - 30 && bx < w.x + w.w + 30 && by > w.y - 30 && by < w.y + w.h + 30);
+        if (!inWall) G.boxes.push(new Box(bx, by));
+    }
 }
 function startGame() {
     // Останавливаем предыдущий цикл, если он был
@@ -1351,9 +1885,10 @@ function startGame() {
 }
 
 function gameLoop() {
-    try { // ЗАЩИТА ОТ ВЫЛЕТОВ: Если случится ошибка, игра не зависнет
+    // ЗАЩИТА ОТ ВЫЛЕТОВ: Если случится ошибка, игра не зависнет
+    try { 
     if (!STATE.inGame) return;
-    G.zone -= 0.35;
+    G.zone -= 0.33; // Замедлил зону на 5%
     G.frame++; // Счетчик кадров для оптимизации
     
     // Обновление
@@ -1378,9 +1913,18 @@ function gameLoop() {
                 // Нанесение урона
                 const dealDamage = () => {
                     t.hp -= b.dmg; t.lastHit = Date.now();
+                    // Эффект тряски при получении урона ИГРОКОМ
+                    if (t === G.p) {
+                        screens.game.classList.remove('damage-flash'); void screens.game.offsetWidth; screens.game.classList.add('damage-flash'); // Красная вспышка
+                        if (b.dmg > 2000) { screens.game.classList.remove('shake'); void screens.game.offsetWidth; screens.game.classList.add('shake'); } // Тряска только при ОЧЕНЬ сильном уроне
+                    }
+
                     G.floatTexts.push(new FloatingText(t.x, t.y - 40, Math.floor(b.dmg), '#ff0000'));
-                    if (t.hp <= 0 && !t.dead) { t.dead = true; dropCube(t.x, t.y); addKillFeed(b.owner, t); } // Убийство
-                    if(!b.isSup) b.owner.sup = Math.min(100, b.owner.sup + (b.owner.t === 'shelly' ? 11 : 15)); // Зарядка ульты
+                    if (t.hp <= 0 && !t.dead) { t.dead = true; if(t.t !== 'bear') dropCube(t.x, t.y); addKillFeed(b.owner, t); } // Убийство (Медведь без банок)
+                    
+                    // Зарядка ульты
+                    if (b.owner.t === 'stu') b.owner.sup = 100; // Сту заряжает мгновенно
+                    else if(!b.isSup && b.owner.t !== 'bear') b.owner.sup = Math.min(100, b.owner.sup + (b.owner.t === 'shelly' ? 11 : 15)); 
                     
                     // Вампиризм Мортиса
                     if (b.isLifesteal) { b.owner.hp = Math.min(b.owner.mHp, b.owner.hp + b.dmg); }
@@ -1397,6 +1941,8 @@ function gameLoop() {
                     }
                 } else {
                     dealDamage(); b.dead = true;
+                    // СПАЙК: Шипы об врага
+                    if (b.owner.t === 'spike' && b.isSpikeMain) spawnSpikes(b);
                 }
                 }
             }
@@ -1412,6 +1958,8 @@ function gameLoop() {
                 } else {
                     box.hp -= b.dmg; b.dead = true; G.floatTexts.push(new FloatingText(box.x, box.y-30, Math.floor(b.dmg), '#fff'));
                     if(box.hp <= 0) { box.dead = true; dropCube(box.x, box.y); }
+                    // СПАЙК: Шипы об ящик
+                    if (b.owner.t === 'spike' && b.isSpikeMain) spawnSpikes(b);
                 }
             }
         });
@@ -1421,11 +1969,18 @@ function gameLoop() {
     G.zones.forEach(z => {
         [G.p, ...G.en].forEach(t => {
             if (t !== z.owner && t.team !== z.owner.team && Math.hypot(t.x - z.x, t.y - z.y) < z.r) {
-                t.slowed = true; // Применяем замедление
-                if (z.life % 60 === 0) { // Урон раз в секунду (331 dmg)
-                    t.hp -= z.dmg; t.lastHit = Date.now();
-                    G.floatTexts.push(new FloatingText(t.x, t.y - 40, z.dmg, '#ff0000'));
-                    z.owner.sup = Math.min(100, z.owner.sup + 15); // Зарядка ульты от урона зоны
+                if (z.type === 'fire') {
+                    // Огонь Сту
+                    t.burnTime = 360; // Поджог на 6 секунд
+                    t.burnAttacker = z.owner; // Запоминаем, кто поджег
+                } else {
+                    // Шипы Спайка
+                    t.slowed = true; // Применяем замедление
+                    if (z.life % 60 === 0) { // Урон раз в секунду
+                        t.hp -= z.dmg; t.lastHit = Date.now();
+                        G.floatTexts.push(new FloatingText(t.x, t.y - 40, z.dmg, '#ff0000'));
+                        z.owner.sup = Math.min(100, z.owner.sup + 15);
+                    }
                 }
             }
         });
@@ -1614,10 +2169,150 @@ function gameLoop() {
     } else gameLoopId = requestAnimationFrame(gameLoop);
     
     } catch (err) {
-        // console.error("GAME LOOP ERROR:", err); // ОТКЛЮЧАЕМ ЛОГИ, ЧТОБЫ НЕ ВЕШАТЬ ТЕЛЕФОН
+        console.error("GAME LOOP ERROR:", err);
         // Пытаемся продолжить игру, несмотря на ошибку
         gameLoopId = requestAnimationFrame(gameLoop);
     }
 }
-// updateMenu(); // Вызывается после логина
-// updateMenu(); // Вызывается после логина
+
+// Инициализация при загрузке (если уже был вход)
+if (STATE.nickname) {
+    updateMenu();
+}
+
+// ФУНКЦИЯ СПАВНА ШИПОВ СПАЙКА
+function spawnSpikes(b) {
+    // 6 шипов по кругу
+    for(let i=0; i<6; i++) {
+        let a = (Math.PI*2/6)*i + (Math.random()*0.5); // Небольшой рандом угла
+        G.bul.push(new Bullet(b.x, b.y, Math.cos(a)*15, Math.sin(a)*15, 200, b.owner, 150)); // Урон 200
+    }
+}
+
+// СИСТЕМА НОВОСТЕЙ
+const NEWS_DATA = {
+    latest: {
+        title: "🔥 ОБНОВЛЕНИЕ v3.1",
+        date: "27.12.2025",
+        html: `
+            <h1 style="color: #ffcc00; text-align: center;">БЕЗУМНЫЙ КАСКАДЁР! [v3.1]</h1>
+            <p>Встречайте нового бойца и глобальные изменения баланса.</p>
+
+            <h2 style="color: #0088ff; border-bottom: 2px solid #fff;">НОВЫЙ БОЕЦ: СТУ</h2>
+            <div style="display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.3); padding:10px;">
+                <img src="stu_avatar.png" style="width:60px; border:2px solid #0088ff">
+                <div>
+                    <strong>СТУ (Эпический)</strong><br>
+                    • <strong>Атака:</strong> Два фейерверка, летящих по спирали.<br>
+                    • <strong>Супер:</strong> Короткий рывок, оставляющий огненный след. Заряжается с 1 попадания!
+                </div>
+            </div>
+
+            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">ИЗМЕНЕНИЯ БАЛАНСА</h2>
+            <ul style="list-style: none; padding: 0;">
+                <li style="margin-bottom: 5px;">🐻 <strong>НИТА:</strong> Урон атаки увеличен с 1200 до <span style="color:#00ff00">1300</span>.</li>
+                <li style="margin-bottom: 5px;">🌵 <strong>СПАЙК:</strong> Урон атаки снижен до 750. Урон шипов снижен до 200.</li>
+                <li style="margin-bottom: 5px;">🔫 <strong>КОЛЬТ:</strong> Урон пули увеличен до <span style="color:#00ff00">330</span>.</li>
+                <li style="margin-bottom: 5px;">🦇 <strong>МОРТИС:</strong> Урон снижен до <span style="color:#ff4444">1350</span>.</li>
+            </ul>
+
+            <h2 style="color: #ff00ff; border-bottom: 2px solid #fff;">ГЕЙМПЛЕЙ</h2>
+            <p>
+                • <strong>Исцеление:</strong> Теперь восстанавливает % от ОБЩЕГО здоровья. Танки ликуют!<br>
+                • <strong>Задержка атаки:</strong> Глобальный кулдаун увеличен до 0.45с.<br>
+                • <strong>Боты:</strong> Улучшен ИИ ботов. Добавлены возможности уклонения от выстрелов; подбор кубов усиления.
+            </p>
+        `
+    },
+    upcoming: {
+        title: "🔮 СКОРО",
+        date: "???",
+        html: `
+            <h1 style="color: #00ffff; text-align: center;">ПЛАНЫ РАЗРАБОТКИ</h1>
+            <p>Наша команда разработчиков продолжает работу над улучшением стабильности и качества проекта.</p>
+            
+            <h2 style="color: #ff00ff; border-bottom: 2px solid #fff;">ИСКУССТВЕННЫЙ ИНТЕЛЛЕКТ</h2>
+            <p>Мы получили множество отзывов касательно поведения ботов. Ввиду этого, следующая неделя будет посвящена полной переработке и оптимизации алгоритмов ИИ. В связи с этим, выпуск контентных обновлений временно приостановлен для сосредоточения на качестве игрового процесса.</p>
+
+            <h2 style="color: #ffff00; border-bottom: 2px solid #fff;">ВИЗУАЛ И ИНТЕРФЕЙС</h2>
+            <p>Ведется активная работа над улучшением графической составляющей и пользовательского интерфейса. В планах — глобальное обновление UI, внедрение новых анимаций и расширение звукового сопровождения.</p>
+
+            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">ROADMAP</h2>
+            <p>В следующих крупных обновлениях ожидается:</p>
+            <ul style="list-style: none; padding: 0;">
+                <li>💎 Новые режимы: <strong>"Захват кристаллов"</strong> и <strong>"Парное столкновение"</strong>.</li>
+                <li>🎁 Расширение наград на Пути Славы.</li>
+                <li>🆕 Выход как минимум <strong>ДВУХ</strong> новых бойцов.</li>
+            </ul>
+            <p style="text-align: center; margin-top: 20px;">Благодарим за вашу поддержку!</p>
+        `
+    },
+    old: {
+        title: "📜 АРХИВ 24.12",
+        date: "24.12.2025",
+        html: `
+            <h1 style="color: #aaa; text-align: center;">ГЛОБАЛЬНОЕ ОБНОВЛЕНИЕ v2.1</h1>
+            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">НОВАЯ МЕХАНИКА ИГРЫ!</h2>
+            <p><strong>* Добавлена система уровней бойцов.</strong><br>
+            Отныне каждый боец имеет <strong>9 уровней силы</strong>. Добавлена валюта — <strong>"Очки силы"</strong>.</p>
+
+            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">НОВЫЕ БОЙЦЫ</h2>
+            <p>
+                🌵 <span style="color: #ffff00; font-weight: bold;">СПАЙК</span> (Легендарный)<br>
+                🦇 <span style="color: #ff0000; font-weight: bold;">МОРТИС</span> (Мифический)
+            </p>
+
+            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">БАЛАНС</h2>
+            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <h3 style="margin: 0; color: #a020f0;">ШЕЛЛИ</h3>
+                • Здоровье: 6764 ед.<br>
+                • Отталкивание противников Супером.
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
+                <h3 style="margin: 0; color: #e83e3e;">НИТА</h3>
+                • Здоровье: 7020 ед.<br>
+                • Урон атаки: 1077 ед.
+            </div>
+
+            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">ПРОЧЕЕ</h2>
+            <ul style="list-style-type: disc; padding-left: 20px;">
+                <li>Добавлены NickName'ы.</li>
+                <li>Индивидуальная перезарядка.</li>
+                <li>Расширено меню выбора бойцов.</li>
+            </ul>
+        `
+    }
+};
+
+function renderNews(id) {
+    const container = document.getElementById('newsContent');
+    const tabs = document.getElementById('newsTabs');
+    const data = NEWS_DATA[id];
+
+    if (!data) return;
+
+    // Рендер вкладок
+    tabs.innerHTML = `
+        <div class="news-tab ${id === 'latest' ? 'active' : ''}" onclick="renderNews('latest')">
+            🔥 ОБНОВЛЕНИЕ
+        </div>
+        <div class="news-tab ${id === 'upcoming' ? 'active' : ''}" onclick="renderNews('upcoming')">
+            🔮 АНОНСЫ
+        </div>
+        <div class="news-tab ${id === 'old' ? 'active' : ''}" onclick="renderNews('old')">
+            📜 АРХИВ
+        </div>
+    `;
+
+    // Рендер контента
+    container.innerHTML = data.html;
+    
+    // Анимация появления
+    container.style.opacity = 0;
+    container.style.transform = 'translateY(20px)';
+    setTimeout(() => {
+        container.style.transition = 'all 0.3s ease-out';
+        container.style.opacity = 1;
+        container.style.transform = 'translateY(0)';
+    }, 50);
+}

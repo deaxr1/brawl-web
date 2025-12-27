@@ -44,8 +44,8 @@
     <!-- ГЛАВНОЕ МЕНЮ -->
     <div id="menuScreen" class="screen">
         <!-- Верхняя панель -->
-        <div class="version-lbl">v2.1 (Beta)</div>
-        <div class="version-lbl">v2.1 (Beta) <span style="margin-left:15px; color:#00ff00">●</span> Online: <span id="onlineCount">...</span></div>
+        <div class="version-lbl">v3.1 (Beta)</div>
+        <div class="online-lbl"><span style="color:#00ff00">●</span> Online: <span id="onlineCount">...</span></div>
         <div class="top-bar">
             <div class="profile-info">
                 <div class="avatar-box">💀</div>
@@ -165,22 +165,46 @@
 
     <!-- МАГАЗИН -->
     <div id="shopScreen" class="screen">
-        <h2>МАГАЗИН</h2>
-        <div class="shop-items">
-            <div class="shop-item" id="buyCoinsBtn">
-                <img src="coin_icon.png" class="item-icon">
-                <div class="price">10 <img src="gem_icon.png" class="tiny-icon"></div>
-                <div class="label">150 МОНЕТ</div>
+        <div class="shop-scroll-container">
+            <!-- Секция 0: BRAWLIDAYS (Слева) -->
+            <div class="shop-section" id="brawlidaysSection" style="display:none;">
+                <h2>BRAWLIDAYS</h2>
+                <div id="brawlidaysTimer" style="color:#00d2ff; font-weight:bold; margin-bottom:5px; font-size:14px;">Осталось: 72ч</div>
+                <div class="shop-item" id="brawlidaysBtn" style="background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); border: 3px solid #fff; box-shadow: 0 0 15px #00d2ff; width: 180px; height: 220px; transform: skewX(-2deg); display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                    <div style="color:#fff; font-weight:bold; font-size:20px; text-shadow:0 0 5px #000; margin-bottom:10px;">ПОДАРОК</div>
+                    <img src="coin_icon.png" style="width:80px; height:80px; object-fit:contain;">
+                    <div style="color:#fff; font-weight:bold; font-size:30px; margin:10px 0;">1500</div>
+                    <div style="color:#00ff00; font-weight:bold; font-size:18px; background:rgba(0,0,0,0.6); padding:5px 15px; border-radius:10px;">БЕСПЛАТНО</div>
+                </div>
             </div>
-            <div class="shop-item" id="buyPpBtn" style="margin: 0 20px;">
-                <img src="pp_icon.png" class="item-icon">
-                <div class="price">25 <img src="gem_icon.png" class="tiny-icon"></div>
-                <div class="label">250 ОЧКОВ СИЛЫ</div>
+
+            <!-- Секция 1: Ежедневные акции -->
+            <div class="shop-section">
+                <h2>ЕЖЕДНЕВНЫЕ АКЦИИ</h2>
+                <div id="shopTimer" class="shop-timer">Новые акции через: 00:00:00</div>
+                <div id="dailyDealsGrid" class="shop-grid"></div>
             </div>
-            <div class="shop-item" id="megaBoxBtn">
-                <img src="mega_box.png" class="item-icon">
-                <div class="price">80 <img src="gem_icon.png" class="tiny-icon"></div>
-                <div class="label">МЕГАЯЩИК</div>
+
+            <!-- Секция 2: Ресурсы -->
+            <div class="shop-section">
+                <h2>РЕСУРСЫ</h2>
+                <div class="shop-items">
+                    <div class="shop-item" id="buyCoinsBtn">
+                        <img src="coin_icon.png" class="item-icon">
+                        <div class="price">10 <img src="gem_icon.png" class="tiny-icon"></div>
+                        <div class="label">150 МОНЕТ</div>
+                    </div>
+                    <div class="shop-item" id="buyPpBtn">
+                        <img src="pp_icon.png" class="item-icon">
+                        <div class="price">25 <img src="gem_icon.png" class="tiny-icon"></div>
+                        <div class="label">250 ОЧКОВ СИЛЫ</div>
+                    </div>
+                    <div class="shop-item" id="megaBoxBtn">
+                        <img src="mega_box.png" class="item-icon">
+                        <div class="price">80 <img src="gem_icon.png" class="tiny-icon"></div>
+                        <div class="label">МЕГАЯЩИК</div>
+                    </div>
+                </div>
             </div>
         </div>
         <button class="back-btn" onclick="showScreen('menu')">НАЗАД</button>
@@ -196,66 +220,8 @@
     <!-- НОВОСТИ -->
     <div id="newsScreen" class="screen">
         <h2>BRAWL NEWS</h2>
-        <div class="news-content" id="newsContent">
-            <h1 style="color: #ffcc00; text-align: center; text-shadow: 2px 2px 0 #000;">ГЛОБАЛЬНОЕ ОБНОВЛЕНИЕ! <span style="font-size: 0.6em; color: #fff; display: block; margin-top: 5px;">24.12.2025</span></h1>
-            <p>Игра все еще находится в стадии BETA [v2.1], поэтому подобных глобальных обновлений будет немало.</p>
-            
-            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">НОВАЯ МЕХАНИКА ИГРЫ!</h2>
-            <p><strong>* Добавлена система уровней бойцов.</strong><br>
-            С добавлением токенов монеты стали менее востребованы, поэтому было принято решение о создании новой системы прокачки.</p>
-            <p>Отныне каждый боец имеет <strong>9 уровней силы (1-9)</strong>. С каждым улучшением у бойца повышаются значения наносимого урона и здоровья. Для улучшений также была добавлена новая валюта — <strong>"Очки силы"</strong>.</p>
-            <p>Каждый боец имеет свои очки силы, они индивидуальны. Очки силы могут выпадать из ящиков, Дороги Славы, а также продаются в магазине за кристаллы. В магазине и на Дороге Славы вы можете выбрать, кому начислить очки, а в ящиках всё зависит от удачи.</p>
-            <p>С ростом уровня растут и требования по монетам и очкам силы.</p>
-
-            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">НОВЫЕ БОЙЦЫ</h2>
-            <p>
-                🌵 <span style="color: #ffff00; font-weight: bold;">СПАЙК</span> (Легендарный) — Мастер контроля с шипами!<br>
-                🦇 <span style="color: #ff0000; font-weight: bold;">МОРТИС</span> (Мифический) — Неуловимый вампир!
-            </p>
-
-            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">БАЛАНС (МАКС. СИЛА)</h2>
-            <p>С целью поддержания баланса и увеличения продолжительности боя, мы значительно усилили бойцов по сравнению с начальными показателями:</p>
-            
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                <h3 style="margin: 0; color: #a020f0;">ШЕЛЛИ</h3>
-                • Здоровье выросло на <span style="color:#00ff00">88%</span> [6764 ед.]<br>
-                • Урон атаки вырос на <span style="color:#00ff00">5%</span> [315 ед.]<br>
-                • Отталкивание противников на 1 клетку после использования Супера.
-            </div>
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                <h3 style="margin: 0; color: #ff4444;">КОЛЬТ</h3>
-                • Здоровье: <span style="color:#ff4444">6014 ед.</span> (-3%)<br>
-                • Урон атаки: <span style="color:#00ff00">323 ед.</span> (Восстановлен)<br>
-                • Скорость атаки незначительно снижена.
-            </div>
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                <h3 style="margin: 0; color: #e83e3e;">НИТА</h3>
-                • Здоровье выросло на <span style="color:#00ff00">85%</span> [7020 ед.]<br>
-                • Урон атаки: <span style="color:#00ff00">1077 ед.</span> (+5%)
-            </div>
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                <h3 style="margin: 0; color: #00ff00;">СПАЙК</h3>
-                • Здоровье: 5400 ед.<br>
-                • Урон атаки: 980 x 5 ед.
-            </div>
-            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 10px;">
-                <h3 style="margin: 0; color: #d000d0;">МОРТИС</h3>
-                • Здоровье: 8000 ед.<br>
-                • Урон атаки: <span style="color:#ff4444">1512 ед.</span> (-10%)<br>
-                • Добавлена задержка между атаками (0.3с).<br>
-                • Исцеление от Супера: 1430 ед.
-            </div>
-
-            <h2 style="color: #00ff00; border-bottom: 2px solid #fff;">ПРОЧЕЕ</h2>
-            <ul style="list-style-type: disc; padding-left: 20px;">
-                <li>Добавлены NickName'ы над бойцами.</li>
-                <li>Добавлена система перезарядки патронов, индивидуальная для каждого бойца.</li>
-                <li>Скорректированы шансы выпадения из ящиков [повышены].</li>
-                <li>Расширено меню выбора бойцов. Теперь информацию о бойце можно узнать прямо в меню!</li>
-                <li>Исправление багов.</li>
-                <li>Улучшена оптимизация ботов.</li>
-            </ul>
-        </div>
+        <div class="news-selector" id="newsTabs"></div>
+        <div class="news-content" id="newsContent"></div>
         <button class="back-btn" onclick="showScreen('menu')">НАЗАД</button>
     </div>
 
